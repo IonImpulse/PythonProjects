@@ -5,7 +5,6 @@ def taxRateFinder(taxPer,bracket):
       if taxRate[number] != 0 :
         taxRate[number] = taxRate[number] + taxRate[number - 1]
     return taxRate
-
 print("==========")
 print("1. Input Income")
 print("2. Input Table")
