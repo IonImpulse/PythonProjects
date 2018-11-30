@@ -1,11 +1,11 @@
 INFO: Platform: msys
 INFO: Version Info: v0.3.0
 DEBUG: Log Path: cp.log
-DEBUG: command: ['python', 'C:\\Users\\ionim\\Documents\\Ethan\\Programs\\Python\\Random Projects\\Virtual Calendar.py']
+DEBUG: command: ['python', 'C:\\Users\\ionim\\Documents\\Ethan\\Programs\\Python\\Random Projects\\CalcGameSolver.py']
 DEBUG: file: None
 DEBUG: pause: True
 DEBUG: repl: python
-DEBUG: args: ['C:\\Users\\ionim\\Documents\\Ethan\\Programs\\Python\\Random Projects\\Virtual Calendar.py']
+DEBUG: args: ['C:\\Users\\ionim\\Documents\\Ethan\\Programs\\Python\\Random Projects\\CalcGameSolver.py']
 INFO: return code: 0 (0x0)
-INFO: elapsed time: 23.854537
+INFO: elapsed time: 4.502036
 INFO: Unknown OS Type: msys
