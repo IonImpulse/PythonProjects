@@ -82,8 +82,8 @@ def solve(input,indexList,output) :
             spots2.append(word)
     tally = [[],[]]
     for items in indexList :
-        tally[0].append(0)
-        tally[1].append(0)
+        tally[0].append(1)
+        tally[1].append(1)
     blank = tally
     for o in temp :
         output.append(int(o))
@@ -109,7 +109,9 @@ def solve(input,indexList,output) :
                             tally[0][element] = tally[0][element] + (int(equ1[i+element+1]) * tester[y])
                         else :
                             tally[0][element] = tally[0][element] + tester[y]
+            y = 0
             for i in spots2 :
+                y = y + 1
                 for element in range(len(indexList)) :
                     if equ2[i+element] == indexList[element] and equ2[i+element] != "_":
                         if is_number(equ2[i+element+1]) == True :
