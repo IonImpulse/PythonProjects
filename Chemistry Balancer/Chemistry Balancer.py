@@ -42,6 +42,19 @@ def indexer(input,output) :
             if e == 0 :
                 output.append(i)
     output.remove(" ")
+def iterate(intList, top) :
+    iter = False
+    j = len(intList)-1
+    if top == 5 :
+        input(":")
+    while iter == False and j >= 0:
+        if intList[j] == top :
+            for l in range(len(intList)-j) :
+                intList[l + j] = 0
+        else :
+            intList[j] = intList[j] + 1
+            iter = True
+        j = j - 1
 def solve(input,indexList,output) :
     spots = 0
     temp = ""
@@ -61,34 +74,61 @@ def solve(input,indexList,output) :
     equ1.remove("=")
     print(equ1)
     print(equ2)
-    spots1 = 0
-    spots2 = 0
-    for word in equ1 :
-        if word == "_" :
-            spots1 = spots1 + 1
-    for word in equ1 :
-        if word == "_" :
-            spots2 = spots2 + 1
+    spots1 = []
+    spots2 = []
+    for word in range(len(equ1)) :
+        if equ1[word] == "_" :
+            spots1.append(word)
+    for word in range(len(equ2)) :
+        if equ2[word] == "_" :
+            spots2.append(word)
     tally = [[],[]]
     for items in indexList :
         tally[0].append(0)
         tally[1].append(0)
+    blank = tally
     for o in temp :
         output.append(int(o))
     solved = False
+    tester = []
+    for j in range(len(spots1)+len(spots2)) :
+        tester.append(1)
+    topN = 1
     while solved == False :
-        p = 0
-        for i in range(spots1-1) :
-            p = p + 1
-            temp = equ1[p:equ1.index("+")]
-            solved = True
-            p = p + len(temp)
-            print(temp)
-        
+        topN = topN + 1
+        endList = []
+        for h in range(len(tester)) :
+            endList.append(topN)
+        while tester != endList and solved == False :
+            tally = blank
+            iterate(tester,topN)
+            y = 0
+            for i in spots1 :
+                y = y + 1
+                for element in range(len(indexList)) :
+                    if equ1[i+element] == indexList[element] :
+                        if is_number(equ1[i+element+1]) == True :
+                            tally[0][element] = tally[0][element] + (int(equ1[i+element+1]) * tester[y])
+                        else :
+                            tally[0][element] = tally[0][element] + tester[y]
+            for i in spots2 :
+                for element in range(len(indexList)) :
+                    if equ2[i+element] == indexList[element] :
+                        if is_number(equ2[i+element+1]) == True :
+                            tally[1][element] = tally[1][element] + (int(equ2[y+element+1]) * tester[y+len(spots1)])
+                        else :
+                            tally[1][element] = tally[1][element] + tester[i+len(spots1)]
+            print(tester)
+            print(tally)
+            if tally[0] == tally[1] :
+                solved = True
+                print(tester)
+                print(tally)
 print("Welcome to Chemistry Balancer!")
 print("==============================")
 print("Input Equation:")
 #_NaBr+_Cl2=_NaCl+_Br2
+#_Ch4+_O2=_CO2+_H2O
 inputE = str(input(":"))
 parsed = []
 indexL = []
@@ -98,3 +138,4 @@ indexer(parsed,indexL)
 print(parsed)
 print(indexL)
 solve(parsed,indexL,result)
+print(result)

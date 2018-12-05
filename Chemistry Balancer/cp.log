@@ -6,6 +6,6 @@ DEBUG: file: None
 DEBUG: pause: True
 DEBUG: repl: python
 DEBUG: args: ['C:\\Users\\ionim\\Documents\\Ethan\\Programs\\Python\\Chemistry Balancer\\Chemistry Balancer.py']
-INFO: return code: 1 (0x1)
-INFO: elapsed time: 0.071279
+INFO: return code: 0 (0x0)
+INFO: elapsed time: 2.438439
 INFO: Unknown OS Type: msys
