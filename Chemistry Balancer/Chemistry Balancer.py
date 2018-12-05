@@ -45,8 +45,6 @@ def indexer(input,output) :
 def iterate(intList, top) :
     iter = False
     j = len(intList)-1
-    if top == 5 :
-        input(":")
     while iter == False and j >= 0:
         if intList[j] == top :
             for l in range(len(intList)-j) :
@@ -106,14 +104,14 @@ def solve(input,indexList,output) :
             for i in spots1 :
                 y = y + 1
                 for element in range(len(indexList)) :
-                    if equ1[i+element] == indexList[element] :
+                    if equ1[i+element] == indexList[element] and equ1[i+element] != "_":
                         if is_number(equ1[i+element+1]) == True :
                             tally[0][element] = tally[0][element] + (int(equ1[i+element+1]) * tester[y])
                         else :
                             tally[0][element] = tally[0][element] + tester[y]
             for i in spots2 :
                 for element in range(len(indexList)) :
-                    if equ2[i+element] == indexList[element] :
+                    if equ2[i+element] == indexList[element] and equ2[i+element] != "_":
                         if is_number(equ2[i+element+1]) == True :
                             tally[1][element] = tally[1][element] + (int(equ2[y+element+1]) * tester[y+len(spots1)])
                         else :

@@ -43,7 +43,7 @@ while True :
     print(ans)
   if choice == 4 :
     print("Loan?")
-    k = float(input(":"))
+    p = float(input(":"))
     print("Rate? 4 = 4%")
     i = float(input(":"))
     print("Time?")
@@ -53,12 +53,12 @@ while True :
     print("Extra?")
     e = float(input(":"))
     output=[]
-    annuity = (((i/100)/c)*k)/(1-((1+((i/100)/c))**(-(n*c))))
+    annuity = (((i/100)/c)*p)/(1-((1+((i/100)/c))**(-(n*c))))
     print(annuity)
     nc = int(n*c)
     i = (i/100)/c
     def sh(listNum,c,low,high):
-      global k
+      k = p
       global i
       global e
       global totalI
