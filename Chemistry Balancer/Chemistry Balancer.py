@@ -103,8 +103,9 @@ def solve(input,indexList,output) :
             y = 0
             for i in spots1 :
                 y = y + 1
-                for element in range(len(indexList)) :
-                    if equ1[i+element] == indexList[element] and equ1[i+element] != "_":
+                for elementk in range(len(indexList)) :
+                    element = elementk-1
+                    if equ1[i+y] == indexList[element] and equ1[i+y] != "_":
                         if is_number(equ1[i+element+1]) == True :
                             tally[0][element] = tally[0][element] + (int(equ1[i+element+1]) * tester[y])
                         else :
@@ -112,12 +113,13 @@ def solve(input,indexList,output) :
             y = 0
             for i in spots2 :
                 y = y + 1
-                for element in range(len(indexList)) :
-                    if equ2[i+element] == indexList[element] and equ2[i+element] != "_":
+                for elementk in range(len(indexList)) :
+                    element = elementk-1
+                    if equ2[i+y] == indexList[element] and equ2[i+y] != "_":
                         if is_number(equ2[i+element+1]) == True :
                             tally[1][element] = tally[1][element] + (int(equ2[y+element+1]) * tester[y+len(spots1)])
                         else :
-                            tally[1][element] = tally[1][element] + tester[i+len(spots1)]
+                            tally[1][element] = tally[1][element] + tester[y+len(spots1)-1]
             print(tester)
             print(tally)
             if tally[0] == tally[1] :
