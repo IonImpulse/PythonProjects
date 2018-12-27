@@ -1,19 +1,18 @@
-from math import *
-hello = [0,0,0,0,0]
-def iterate(intList, top) :
-    endList = []
-    for h in range(len(intList)) :
-        endList.append(top)
-    while intList != endList :
-        iter = False
-        j = len(intList)-1
-        while iter == False and j >= 0:
-            if intList[j] == top :
-                for l in range(len(intList)-j) :
-                    intList[l + j] = 0
-            else :
-                intList[j] = intList[j] + 1
-                iter = True
-            j = j - 1
-        print(intList)
-iterate(hello,5)
+import time
+name = input("Name: ")
+print("Hello there " + name + "!")
+print("How are you feeling?\n")
+print("1: Good")
+print("2: Normal")
+print("3: Bad")
+feeling = int(input("\nChoice: "))
+if feeling == 1 :
+    print("That's great!")
+if feeling == 2 :
+    print("Hope you have a good day!")
+if feeling == 3 :
+    print("I hope you feel better soon!")
+print("\nWhat year were you born in?")
+year = int(input(":"))
+year = int(time.strftime("%Y")) - year
+print("You are " + str(year) + " years old!")

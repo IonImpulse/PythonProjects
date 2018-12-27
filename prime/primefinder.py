@@ -9,14 +9,16 @@ while i < n :
     e = 0
     m = sqrt(i)
     while e == 0 and u < k and l[u]<m:
-      if i%(l[u]) == 0 :
-        e = 1
-      u = u+1
+        if i%(l[u]) == 0 :
+            e = 1
+        u = u+1
     if e == 0 :
       l.append(i)
-      print(i)
       k = k + 1
-with open('primes.txt', 'w') as f:
-    for item in l:
-        f.write("%s," % item)
-n = input()
+print(l)
+print("Save? Y/n")
+choice = input(":")
+if choice == "Y" :
+    with open('primes.txt', 'w') as f:
+        for item in l:
+            f.write("%s," % item)

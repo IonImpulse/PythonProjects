@@ -1,4 +1,4 @@
-#Chad, Anon, Stacy, Fred, Karen, George, Brian
+#Chad, Anon, Stacy, Karen, George, Brian, Sue
 from random import *
 from time import *
 import os
