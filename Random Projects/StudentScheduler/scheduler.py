@@ -8,20 +8,39 @@ inputFile = "InputData.csv"
 #Function to check if there are too many classes, too many people per class, or during the same time slot
 def validate(list,referenceList,eReferenceList,maximum) :
     tempReferenceList = deepcopy(eReferenceList)
-    for rows in list :
+    tList = [[list[j][i] for j in range(len(list))] for i in range(len(list[0]))]
+    tempLen = len(list[0][0])
+    for columns in tList :
         loopNum = 0
-        tempLen = len(rows)
         for i in range(tempLen-2) :
             loopNum1 = 0
             placed = False
             for o in tempReferenceList :
                 for key in o :
-                    if key[:4] == rows[loopNum + 1][:4] and (tempReferenceList[loopNum1][key] + int(rows[tempLen-1])) <= maximum :
-                        tempReferenceList[loopNum1][key] += int(rows[tempLen-1])
+                    if key[:4] == columns[loopNum + 1][:4] and (tempReferenceList[loopNum1][key] + 1) <= 1 and placed == False:
+                        tempReferenceList[loopNum1][key] += 1
                         placed = True
-                        break
                 loopNum1 += 1
             if placed == False :
+                print("26")
+                return False
+            loopNum += 1
+    tempReferenceList = deepcopy(eReferenceList)
+    tempLen = len(list[0])
+    for rows in list :
+        loopNum = 0
+        for i in range(tempLen-2) :
+            loopNum1 = 0
+            placed = False
+            for o in tempReferenceList :
+                for key in o :
+                    if key[:4] == rows[loopNum + 1][:4] and (tempReferenceList[loopNum1][key] + int(rows[tempLen-1])) <= maximum and placed == False:
+                        tempReferenceList[loopNum1][key] += int(rows[tempLen-1])
+                        print(tempReferenceList[loopNum1][key])
+                        placed = True
+                loopNum1 += 1
+            if placed == False :
+                #print("43")
                 return False
             loopNum += 1
     for rows in list :
@@ -29,6 +48,7 @@ def validate(list,referenceList,eReferenceList,maximum) :
         for item in tempReferenceList :
             for key in item :
                 if tempReferenceList[loopNum][key] > maximum :
+                    print("51")
                     return False
             loopNum += 1
     return True
@@ -106,25 +126,30 @@ for item in classReference :
 #Start the solve. It starts at row A, then keeps going down, making changes until it is correct.
 loopNum = 0
 tempSList = []
+restart = False
+previous = 0
 while loopNum < len(studentsList):
+    if restart == False and previous != 120 :
+        tempSList.append(studentsList[loopNum])
+        print("eya")
     print("Loop number: " + str(loopNum+1) + " out of " + str(len(studentsList)))
-    tempSList.append(studentsList[loopNum])
+    print(tempSList)
     loopNum2 = 0
     previous = 0
     tempPermutations = list(itertools.permutations(((tempSList[loopNum][1:])[:-1])))
     while validate(tempSList,classReference,eClassReference,maximumStudents) == False and loopNum2 + previous < (len(tempPermutations)):
-        if restart == False :
+        if restart == True :
             tempSList[loopNum] = list(studentsList[loopNum][0]) + list(tempPermutations[loopNum2 + previous]) + list(studentsList[loopNum][len(studentsList[loopNum])-1])
-        loopNum2 += 1
-    if validate(tempSList,classReference,eClassReference,maximumStudents) == False :
-        restart = True
-        previous += 1
-    elif validate(tempSList,classReference,eClassReference,maximumStudents) == False and restart =
-    else :
-        restart = False
-        previous = 0
+            loopNum2 += 1
+        if validate(tempSList,classReference,eClassReference,maximumStudents) == False :
+            restart = True
+            previous += 1
+        else :
+            restart = False
+            previous = 0
     if restart == False :
         loopNum += 1
 if validate(tempSList,classReference,eClassReference,maximumStudents) == True :
     solves.append(tempSList)
-print(solves)
+for item in tempSList :
+    print(item)
