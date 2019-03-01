@@ -35,7 +35,7 @@ o = []
 endList = []
 for i in range(ts[2]) :
     o.append(0)
-    endList.append(ts[3])
+    endList.append(ts[3]-1)
 while round(s,5) != round(e,5) :
     if endList == o :
         print("No Solution")

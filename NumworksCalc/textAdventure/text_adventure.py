@@ -53,7 +53,7 @@ def map (place, placeOld):
     print(currentMap[i])
 
 def moveTo (d):
-    oldX = x
+  oldX = x
   oldY = y
   lineOutput = x
   #this is the numpad directions
@@ -65,7 +65,7 @@ def moveTo (d):
     x = x + 1
   if (d == 5):
     x = x - 1
-  print("x: " + x + " y: " + y)
+  print("x: " + str(x) + " y: " + str(y))
   #I'm using strings, so this converts to and from lists
   #If the x doesn't change, then no need to replace old string
   if (oldY != y):
@@ -80,8 +80,6 @@ def moveTo (d):
   for j in range(12):
     print(currentMap[j])
 
-def select ()
-
 map('town','null')
 y = 6
 x = 14
@@ -90,4 +88,5 @@ while (cInput != '**'):
     cInput = input()
     if (cInput == 8 or 6 or 4 or 2):
         moveTo(cInput)
-    else if (cInput == 5):
+    elif (cInput == 5):
+        break
