@@ -11,38 +11,33 @@ def validate(list,referenceList,eReferenceList,maximum) :
     tList = [[list[j][i] for j in range(len(list))] for i in range(len(list[0]))]
     tempLen = len(list[0][0])
     for columns in tList :
-        loopNum = 0
         for i in range(tempLen-2) :
             loopNum1 = 0
             placed = False
             for o in tempReferenceList :
                 for key in o :
-                    if key[:4] == columns[loopNum + 1][:4] and (tempReferenceList[loopNum1][key] + 1) <= 1 and placed == False:
+                    if key[:4] == columns[i + 1][:4] and (tempReferenceList[loopNum1][key] + 1) <= 1 and placed == False:
                         tempReferenceList[loopNum1][key] += 1
                         placed = True
                 loopNum1 += 1
             if placed == False :
                 print("26")
                 return False
-            loopNum += 1
     tempReferenceList = deepcopy(eReferenceList)
     tempLen = len(list[0])
     for rows in list :
-        loopNum = 0
         for i in range(tempLen-2) :
             loopNum1 = 0
             placed = False
             for o in tempReferenceList :
                 for key in o :
-                    if key[:4] == rows[loopNum + 1][:4] and (tempReferenceList[loopNum1][key] + int(rows[tempLen-1])) <= maximum and placed == False:
+                    if key[:4] == rows[i + 1][:4] and (tempReferenceList[loopNum1][key] + int(rows[tempLen-1])) <= maximum and placed == False :
                         tempReferenceList[loopNum1][key] += int(rows[tempLen-1])
-                        print(tempReferenceList[loopNum1][key])
                         placed = True
                 loopNum1 += 1
             if placed == False :
-                #print("43")
+                print("43")
                 return False
-            loopNum += 1
     for rows in list :
         loopNum = 0
         for item in tempReferenceList :
