@@ -22,36 +22,38 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
     del tList[0]
     del tList[-1]
     for columns in tList :
-        print(columns)
-        for i in range(tempLen-2) :
+        print("COLUMNS",columns)
+        print(tempTeacherList)
+        for i in range(tempLen) :
             loopNum1 = 0
             placed = False
             for o in tempReferenceList :
                 for key in o :
-                    if key == "GOA" :
-                        placed = True
-                    elif key[:5] == columns[i + 1][:5] and tempTeacherList[loopNum1] == False and placed == False:
-                        tempTeacherList[loopNum1] = True
-                        placed = True
+                    for c in columns :
+                        if key[:3] == "GOA" :
+                            placed = True
+                        elif str(key) == str(c) and tempTeacherList[loopNum1] == False and placed == False:
+                            print(key,c)
+                            tempTeacherList[loopNum1] = True
+                            placed = True
                 loopNum1 += 1
             if placed == False :
                 print("26")
-                print(tempTeacherList)
                 return False
-        print(tempTeacherList)
     tempReferenceList = deepcopy(eReferenceList)
     tempLen = len(list[0])
-    for rows in list :
-        print(rows)
+    rList = deepcopy(list)
+    for loop, rows in enumerate(list) :
         for i in range(tempLen-2) :
-            loopNum1 = 0
             placed = False
-            for o in tempReferenceList :
-                for key in o :
-                    if str(key[:4]) == str(rows[i + 1][:4]) and (tempReferenceList[loopNum1][key] + int(rows[tempLen-1])) <= maximum and placed == False :
-                        tempReferenceList[loopNum1][key] += int(rows[tempLen-1])
+            for loop1, o in enumerate(tempReferenceList) :
+                for loop2, key in enumerate(o) :
+                    if str(key[:4]) == str(rows[i + 1][:4]) and (tempReferenceList[loop1][key] + int(rows[tempLen-1])) <= maximum and placed == False :
+                        tempReferenceList[loop1][key] += int(rows[tempLen-1])
+                        if str(key) != str(rows[i + 1]) :
+                            rList[loop][loop2] = rows[i + 1]
+                            print(rList[loop][loop2], "HLLLLL")
                         placed = True
-                loopNum1 += 1
             if placed == False :
                 print("41")
                 return False
@@ -63,6 +65,8 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
                     print("51")
                     return False
             loopNum += 1
+    tempSList = deepcopy(rList)
+    print(tempSList)
     return True
 
 #Imports the data as  a matrix, making sure to not just crash if the file isn't found
@@ -165,6 +169,6 @@ while loopNum < len(studentsList):
         loopNum += 1
 if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
     solves.append(tempSList)
-print("=======================================================")
+print("===================================================")
 for item in tempSList :
     print(item)
