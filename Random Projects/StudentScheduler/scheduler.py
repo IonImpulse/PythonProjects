@@ -137,7 +137,7 @@ for item in classReference :
                 eClassReference[loopNum][str(key)+str(i+1)] = 0
         eClassReference[loopNum][key] = 0
     loopNum += 1
-
+    
 teacherList = []
 for i in eClassReference :
     teacherList.append(False)
