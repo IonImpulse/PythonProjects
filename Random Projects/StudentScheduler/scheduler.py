@@ -48,7 +48,7 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
             placed = False
             for loop1, o in enumerate(tempReferenceList) :
                 for loop2, key in enumerate(o) :
-                    if str(key[:4]) == str(rows[i + 1][:4]) and (tempReferenceList[loop1][key] + int(rows[tempLen-1])) <= maximum and placed == False :
+                    if str(key[:3]) == str(rows[i + 1][:3]) and (tempReferenceList[loop1][key] + int(rows[tempLen-1])) <= maximum and placed == False :
                         tempReferenceList[loop1][key] += int(rows[tempLen-1])
                         if str(key) != str(rows[i + 1]) :
                             rList[loop][loop2] = rows[i + 1]
