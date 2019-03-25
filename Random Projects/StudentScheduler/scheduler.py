@@ -27,16 +27,15 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
         for i in range(tempLen) :
             loopNum1 = 0
             placed = False
-            for o in tempReferenceList :
-                for key in o :
-                    for c in columns :
-                        if key[:3] == "GOA" :
-                            placed = True
-                        elif str(key) == str(c) and tempTeacherList[loopNum1] == False and placed == False:
-                            print(key,c)
-                            tempTeacherList[loopNum1] = True
-                            placed = True
-                loopNum1 += 1
+            for key in tempReferenceList[i] :
+                for c in columns :
+                    if key[:3] == "GOA" :
+                        placed = True
+                    elif str(key) == str(c) and tempTeacherList[loopNum1] == False and placed == False:
+                        print(key,c)
+                        tempTeacherList[loopNum1] = True
+                        placed = True
+            loopNum1 += 1
             if placed == False :
                 print("26")
                 return False
@@ -137,7 +136,7 @@ for item in classReference :
                 eClassReference[loopNum][str(key)+str(i+1)] = 0
         eClassReference[loopNum][key] = 0
     loopNum += 1
-    
+
 teacherList = []
 for i in eClassReference :
     teacherList.append(False)
