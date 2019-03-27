@@ -3,6 +3,7 @@ import csv
 from copy import deepcopy
 import itertools
 import tkinter as tk
+from time import sleep
 from tkinter import filedialog
 import os
 import sys
@@ -10,36 +11,14 @@ clear = lambda: os.system('cls')
 root = tk.Tk()
 root.withdraw()
 
+print("The\nSwiftly Superb Student Schedule Solver\n======================================\nBy Ethan Vazquez")
+sleep(1)
+
 #Simple file dialog, wiht csv set as default
 inputFile = filedialog.askopenfilename(filetypes = (("Comma Seperated Values","*.csv"),("All files", "*.*")))
 
 #Function to check if there are too many classes, too many people per class, or during the same time slot
 def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
-    tempReferenceList = deepcopy(eReferenceList)
-    tempTeacherList = deepcopy(eTeachList)
-    tList = [[list[j][i] for j in range(len(list))] for i in range(len(list[0]))]
-    tempLen = len(tList[0])
-    del tList[0]
-    del tList[-1]
-    for columns in tList :
-        print("COLUMNS",columns)
-        print(tempTeacherList)
-        for i in range(tempLen) :
-            loopNum1 = 0
-            placed = False
-            for o in tempReferenceList :
-                for key in o :
-                    for c in columns :
-                        if key[:3] == "GOA" :
-                            placed = True
-                        elif str(key) == str(c) and tempTeacherList[loopNum1] == False and placed == False:
-                            print(key,c)
-                            tempTeacherList[loopNum1] = True
-                            placed = True
-                loopNum1 += 1
-            if placed == False :
-                print("26")
-                return False
     tempReferenceList = deepcopy(eReferenceList)
     tempLen = len(list[0])
     rList = deepcopy(list)
@@ -57,6 +36,31 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
             if placed == False :
                 print("41")
                 return False
+                break
+    tempReferenceList = deepcopy(eReferenceList)
+    tempTeacherList = deepcopy(eTeachList)
+    tList = [[list[j][i] for j in range(len(list))] for i in range(len(list[0]))]
+    tempLen = len(tList[0])
+    del tList[0]
+    del tList[-1]
+    for columns in tList :
+        print("COLUMNS",columns)
+        print(tempTeacherList)
+        for i in range(tempLen) :
+            placed = False
+            for o, j in enumerate(tempReferenceList) :
+                for key in j :
+                    for c in columns :
+                        if key[:3] == "GOA" :
+                            placed = True
+                        elif str(key) == str(c) and tempTeacherList[o] == False and placed == False:
+                            print(key,c)
+                            tempTeacherList[o] = True
+                            placed = True
+            if placed == False :
+                print("26")
+                return False
+                break
     for rows in list :
         loopNum = 0
         for item in tempReferenceList :
@@ -64,6 +68,7 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
                 if tempReferenceList[loopNum][key] > maximum :
                     print("51")
                     return False
+                    break
             loopNum += 1
     tempSList = deepcopy(rList)
     print(tempSList)
