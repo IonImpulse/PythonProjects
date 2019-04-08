@@ -27,7 +27,7 @@ text_file.write(writeString)
 print("How many chapters?")
 chapterCount = int(input(":"))
 for i in range(chapterCount) :
-    print("Name?")
+    print("Chapter " + str(i+1) + " Name?")
     title = str(input(":"))
     print("Start?")
     writeString = stampToSeconds()
