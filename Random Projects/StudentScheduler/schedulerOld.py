@@ -11,7 +11,7 @@ clear = lambda: os.system('cls')
 root = tk.Tk()
 root.withdraw()
 
-print("The\nSuperb Student Schedule Solver\n======================================\nBy Ethan Vazquez")
+print("The\nSwiftly Superb Student Schedule Solver\n======================================\nBy Ethan Vazquez")
 sleep(1)
 
 #Simple file dialog, wiht csv set as default
@@ -31,7 +31,7 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
                         tempReferenceList[loop1][key] += int(rows[tempLen-1])
                         if str(key) != str(rows[i + 1]) :
                             rList[loop][loop2] = rows[i + 1]
-                            #print(rList[loop][loop2], "HLLLLL")
+                            print(rList[loop][loop2], "HLLLLL")
                         placed = True
             if placed == False :
                 print("41")
@@ -40,27 +40,27 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
     tempReferenceList = deepcopy(eReferenceList)
     tempTeacherList = deepcopy(eTeachList)
     tList = [[list[j][i] for j in range(len(list))] for i in range(len(list[0]))]
-    tempLen = len(tList)
-    print(tList)
+    tempLen = len(tList[0])
     del tList[0]
-    del tList[tempLen-2]
-    print(tList)
-    for i, rows in enumerate(tList) :
-        tempTeacherList = deepcopy(eTeachList)
-        for j, item in enumerate(rows) :
+    del tList[-1]
+    for columns in tList :
+        print("COLUMNS",columns)
+        print(tempTeacherList)
+        for i in range(tempLen) :
             placed = False
-            for k, teacher in enumerate(tempReferenceList) :
-                for l, sClass in enumerate(teacher) :
-                    if sClass == item[:4] :
-                        for o, testClass in enumerate(teacher) :
-                            if item[:3] == "GOA" :
-                                tempTeacherList[k] = False
-                            elif tempTeacherList[k] == False :
-                                tempTeacherList[k] = True
-                                placed = True
-                            elif tempTeacherList[k] == True :
-                                print("55")
-                                return False
+            for o, j in enumerate(tempReferenceList) :
+                for key in j :
+                    for c in columns :
+                        if key[:3] == "GOA" :
+                            placed = True
+                        elif str(key) == str(c) and tempTeacherList[o] == False and placed == False:
+                            print(key,c)
+                            tempTeacherList[o] = True
+                            placed = True
+            if placed == False :
+                print("26")
+                return False
+                break
     for rows in list :
         loopNum = 0
         for item in tempReferenceList :
@@ -72,6 +72,8 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
             loopNum += 1
     tempSList = deepcopy(rList)
     print(tempSList)
+    print(tempReferenceList)
+    print(tempTeacherList)
     return True
 
 #Imports the data as  a matrix, making sure to not just crash if the file isn't found
@@ -161,10 +163,10 @@ while loopNum < len(studentsList):
     while validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False and loopNum2 + previous < (len(tempPermutations)):
         if restart == True :
             tempSList[loopNum] = (list(studentsList[loopNum][0]) + list(tempPermutations[loopNum2 + previous]) + [int(studentsList[loopNum][len(studentsList[loopNum])-1])])
+            clear()
             print("Permutation number " + str(loopNum2+previous))
-            print(tempSList)
             loopNum2 += 1
-        elif validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False :
+        if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False :
             restart = True
             previous += 1
         else :
@@ -177,3 +179,5 @@ if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList
 print("===================================================")
 for item in tempSList :
     print(item)
+print(tempReferenceList)
+print(tempTeacherList)
