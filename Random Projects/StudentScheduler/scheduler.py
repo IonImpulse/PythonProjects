@@ -31,7 +31,7 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
                         tempReferenceList[loop1][key] += int(rows[tempLen-1])
                         if str(key) != str(rows[i + 1]) :
                             rList[loop][loop2] = rows[i + 1]
-                            #print(rList[loop][loop2], "HLLLLL")
+                            print(rList[loop][loop2], "HLLLLL")
                         placed = True
             if placed == False :
                 print("41")
@@ -39,7 +39,7 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
                 break
     tempReferenceList = deepcopy(eReferenceList)
     tempTeacherList = deepcopy(eTeachList)
-    tList = [[list[j][i] for j in range(len(list))] for i in range(len(list[0]))]
+    tList = [[rList[j][i] for j in range(len(rList))] for i in range(len(rList[0]))]
     tempLen = len(tList)
     print(tList)
     del tList[0]
@@ -55,11 +55,12 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
                         for o, testClass in enumerate(teacher) :
                             if item[:3] == "GOA" :
                                 tempTeacherList[k] = False
-                            elif tempTeacherList[k] == False :
+                            elif tempTeacherList[k] == False and item != testClass :
                                 tempTeacherList[k] = True
                                 placed = True
-                            elif tempTeacherList[k] == True :
+                            elif tempTeacherList[k] == True and placed == False :
                                 print("55")
+                                print(tempTeacherList)
                                 return False
     for rows in list :
         loopNum = 0
@@ -71,7 +72,6 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
                     break
             loopNum += 1
     tempSList = deepcopy(rList)
-    print(tempSList)
     return True
 
 #Imports the data as  a matrix, making sure to not just crash if the file isn't found
@@ -158,13 +158,13 @@ while loopNum < len(studentsList):
     loopNum2 = 0
     previous = 0
     tempPermutations = list(itertools.permutations(((tempSList[loopNum][1:])[:-1])))
-    while validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False and loopNum2 + previous < (len(tempPermutations)):
+    while validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False and loopNum2 < (len(tempPermutations)):
+        tempPermutations = list(itertools.permutations(((tempSList[loopNum][1:])[:-1])))
         if restart == True :
-            tempSList[loopNum] = (list(studentsList[loopNum][0]) + list(tempPermutations[loopNum2 + previous]) + [int(studentsList[loopNum][len(studentsList[loopNum])-1])])
-            print("Permutation number " + str(loopNum2+previous))
-            print(tempSList)
+            tempSList[loopNum] = (list(studentsList[loopNum][0]) + list(tempPermutations[loopNum2]) + [int(studentsList[loopNum][len(studentsList[loopNum])-1])])
+            print("Permutation number " + str(loopNum2))
             loopNum2 += 1
-        elif validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False :
+        if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False :
             restart = True
             previous += 1
         else :
