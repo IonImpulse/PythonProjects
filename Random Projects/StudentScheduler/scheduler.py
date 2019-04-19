@@ -51,11 +51,9 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
             placed = False
             for k, teacher in enumerate(tempReferenceList) :
                 for l, sClass in enumerate(teacher) :
-                    if sClass == item[:4] :
+                    if sClass == item[:4] and item[:3] != "GOA" :
                         for o, testClass in enumerate(teacher) :
-                            if item[:3] == "GOA" :
-                                tempTeacherList[k] = False
-                            elif tempTeacherList[k] == False and item != testClass :
+                            if tempTeacherList[k] == False and item != testClass :
                                 tempTeacherList[k] = True
                                 placed = True
                             elif tempTeacherList[k] == True and placed == False :
