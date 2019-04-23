@@ -110,6 +110,7 @@ for i in classInputList :
         if exists == False :
             classReference[loopNum][o[:4]] = 1
     loopNum += 1
+
 #Sets GOA classes to the maximum of 5, since there is no real "period" for it
 loopNum = 0
 for i in classReference :
@@ -129,6 +130,10 @@ while True :
     except Exception as e:
         break
 
+studentsList = sorted(studentsList, key = lambda x: int(x[len(studentsList[0])-1]),reverse=True)
+
+print(studentsList)
+x = input()
 #Creates an empty dict to keep track of classes
 solves = []
 loopNum = 0
@@ -154,9 +159,10 @@ while loopNum < len(studentsList):
         tempSList.append(studentsList[loopNum])
     print("Loop number: " + str(loopNum+1) + " out of " + str(len(studentsList)))
     loopNum2 = 0
-    previous = 0
+    pos = 0
+    solved = False
     tempPermutations = list(itertools.permutations(((tempSList[loopNum][1:])[:-1])))
-    while validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False and loopNum2 < (len(tempPermutations)):
+    while solved == False and loopNum2 < (len(tempPermutations)):
         tempPermutations = list(itertools.permutations(((tempSList[loopNum][1:])[:-1])))
         if restart == True :
             tempSList[loopNum] = (list(studentsList[loopNum][0]) + list(tempPermutations[loopNum2]) + [int(studentsList[loopNum][len(studentsList[loopNum])-1])])
@@ -164,15 +170,16 @@ while loopNum < len(studentsList):
             loopNum2 += 1
         if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False :
             restart = True
-            previous += 1
+            pos -= 1
         else :
             restart = False
-            previous = 0
+            pos += 1
+            if pos < 0 :
+                print("No Solution! :'(")
     if restart == False :
         loopNum += 1
     for item in tempSList :
         print(item)
-    x = input()
 if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
     solves.append(tempSList)
 print("===================================================")
