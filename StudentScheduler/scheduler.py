@@ -155,7 +155,7 @@ for i in studentsList :
     permList.append(int(0))
 attempts = 0
 solves = []
-
+direction = 0
 while loopNum != len(studentsList) and attempts != len(studentsList) :
     print("Solving row", loopNum + 1)
     solved = False
@@ -164,12 +164,15 @@ while loopNum != len(studentsList) and attempts != len(studentsList) :
         tempPermutations = list(itertools.permutations(((tempSList[loopNum][1:])[:-1])))
         tempSList[loopNum] = (list(studentsList[loopNum][0]) + list(tempPermutations[permList[loopNum]]) + [int(studentsList[loopNum][len(studentsList[loopNum])-1])])
         if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
+            loopNum += 1
             solved = True
         elif permList[loopNum] < len(tempPermutations) - 1 :
             permList[loopNum] += 1
         else :
-            del tempSList[loopNum]
-            loopNum -= 2
+            direction += 1
+            loopNum -= direction
+            for i in range(direction) :
+                del tempSList[-1]
             if loopNum < 0 :
                 if attempts == len(studentsList) :
                     print("No solution! Final solve:")
@@ -178,7 +181,8 @@ while loopNum != len(studentsList) and attempts != len(studentsList) :
                     exit()
                 else :
                     attempts += 1
-                    loopNum = -1
+                    loopNum = 0
+                    direction = 0
                     tempSList = []
                     permList = []
                     for i in studentsList :
@@ -186,9 +190,10 @@ while loopNum != len(studentsList) and attempts != len(studentsList) :
                     studentsList.insert(0, studentsList.pop())
                     solved = True
         print(loopNum,permList,attempts)
-    loopNum += 1
-    if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
-        solves.append(tempSList)
+    if loopNum == len(studentsList) :
+        if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
+            solves.append(tempSList)
+
 print("===================================================")
 for i, solve in enumerate(solves) :
     print("Solution #" + str(i + 1))
