@@ -12,7 +12,6 @@ root = tk.Tk()
 root.withdraw()
 
 print("The\nSuperb Student Schedule Solver\n======================================\nBy Ethan Vazquez")
-sleep(1)
 
 #Simple file dialog, wiht csv set as default
 inputFile = filedialog.askopenfilename(filetypes = (("Comma Seperated Values","*.csv"),("All files", "*.*")))
@@ -29,9 +28,6 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
                 for loop2, key in enumerate(o) :
                     if str(key[:3]) == str(rows[i + 1][:3]) and (tempReferenceList[loop1][key] + int(rows[tempLen-1])) <= maximum and placed == False :
                         tempReferenceList[loop1][key] += int(rows[tempLen-1])
-                        if str(key) != str(rows[i + 1]) :
-                            rList[loop][loop2] = rows[i + 1]
-                            #print(rList[loop][loop2], "HLLLLL")
                         placed = True
             if placed == False :
                 print("41")
@@ -80,7 +76,10 @@ except Exception as e:
     print(str(e) + "\n=====================================\nPlease select the appropriate CSV file.")
     sys.exit()
 
-
+tempInputData = deepcopy(inputDataRaw)
+for i, row in enumerate(tempInputData) :
+    for j, item in enumerate(row) :
+        inputDataRaw[i][j] = inputDataRaw[i][j].replace(" ","")
 #Gets the classes from the data, and maximumStudents
 loopNum = 0
 classInputList = []
@@ -132,10 +131,7 @@ while True :
 
 studentsList = sorted(studentsList, key = lambda x: int(x[len(studentsList[0])-1]),reverse=True)
 
-print(studentsList)
-x = input()
 #Creates an empty dict to keep track of classes
-solves = []
 loopNum = 0
 eClassReference = deepcopy(classReference)
 for item in classReference :
@@ -154,34 +150,47 @@ loopNum = 0
 tempSList = []
 restart = False
 previous = 0
-while loopNum < len(studentsList):
-    if restart == False and previous != 120 :
-        tempSList.append(studentsList[loopNum])
-    print("Loop number: " + str(loopNum+1) + " out of " + str(len(studentsList)))
-    loopNum2 = 0
-    pos = 0
+permList = []
+for i in studentsList :
+    permList.append(int(0))
+attempts = 0
+solves = []
+
+while loopNum != len(studentsList) and attempts != len(studentsList) :
+    print("Solving row", loopNum + 1)
     solved = False
-    tempPermutations = list(itertools.permutations(((tempSList[loopNum][1:])[:-1])))
-    while solved == False and loopNum2 < (len(tempPermutations)):
+    tempSList.append(studentsList[loopNum])
+    while solved == False :
         tempPermutations = list(itertools.permutations(((tempSList[loopNum][1:])[:-1])))
-        if restart == True :
-            tempSList[loopNum] = (list(studentsList[loopNum][0]) + list(tempPermutations[loopNum2]) + [int(studentsList[loopNum][len(studentsList[loopNum])-1])])
-            print("Permutation number " + str(loopNum2))
-            loopNum2 += 1
-        if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == False :
-            restart = True
-            pos -= 1
+        tempSList[loopNum] = (list(studentsList[loopNum][0]) + list(tempPermutations[permList[loopNum]]) + [int(studentsList[loopNum][len(studentsList[loopNum])-1])])
+        if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
+            solved = True
+        elif permList[loopNum] < len(tempPermutations) - 1 :
+            permList[loopNum] += 1
         else :
-            restart = False
-            pos += 1
-            if pos < 0 :
-                print("No Solution! :'(")
-    if restart == False :
-        loopNum += 1
-    for item in tempSList :
-        print(item)
-if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
-    solves.append(tempSList)
+            del tempSList[loopNum]
+            loopNum -= 2
+            if loopNum < 0 :
+                if attempts == len(studentsList) :
+                    print("No solution! Final solve:")
+                    for item in tempSList :
+                        print(item)
+                    exit()
+                else :
+                    attempts += 1
+                    loopNum = -1
+                    tempSList = []
+                    permList = []
+                    for i in studentsList :
+                        permList.append(int(0))
+                    studentsList.insert(0, studentsList.pop())
+                    solved = True
+        print(loopNum,permList,attempts)
+    loopNum += 1
+    if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
+        solves.append(tempSList)
 print("===================================================")
-for item in tempSList :
-    print(item)
+for i, solve in enumerate(solves) :
+    print("Solution #" + str(i + 1))
+    for item in solve :
+        print(item)
