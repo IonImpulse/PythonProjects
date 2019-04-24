@@ -7,9 +7,20 @@ from time import sleep
 from tkinter import filedialog
 import os
 import sys
+import gc
 clear = lambda: os.system('cls')
 root = tk.Tk()
 root.withdraw()
+
+def progress(count, total, status=''):
+    bar_len = 60
+    filled_len = int(round(bar_len * count / float(total)))
+
+    percents = round(100.0 * count / float(total), 1)
+    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+
+    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+    sys.stdout.flush()
 
 print("The\nSuperb Student Schedule Solver\n======================================\nBy Ethan Vazquez")
 
@@ -28,10 +39,9 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
                 for loop2, key in enumerate(o) :
                     if str(key[:3]) == str(rows[i + 1][:3]) and (tempReferenceList[loop1][key] + int(rows[tempLen-1])) <= maximum and placed == False :
                         tempReferenceList[loop1][key] += int(rows[tempLen-1])
-
                         placed = True
             if placed == False :
-                print("41")
+                #print("41")
                 return False
                 break
     tempReferenceList = deepcopy(eReferenceList)
@@ -62,11 +72,10 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
         for item in tempReferenceList :
             for key in item :
                 if tempReferenceList[loopNum][key] > maximum :
-                    print("51")
+                    #print("51")
                     return False
                     break
             loopNum += 1
-    tempSList = deepcopy(rList)
     return True
 
 #Imports the data as  a matrix, making sure to not just crash if the file isn't found
@@ -156,25 +165,30 @@ for i in studentsList :
     permList.append(int(0))
 attempts = 0
 solves = []
+tempPermutations = []
 direction = 0
 while loopNum != len(studentsList) and attempts != len(studentsList) :
-    print("Solving row", loopNum + 1)
+    #print("Solving row", loopNum + 1)
     solved = False
     tempSList.append(studentsList[loopNum])
     while solved == False :
+        del tempPermutations
+        gc.collect()
         tempPermutations = list(itertools.permutations(((tempSList[loopNum][1:])[:-1])))
-        tempSList[loopNum] = (list(studentsList[loopNum][0]) + list(tempPermutations[permList[loopNum]]) + [int(studentsList[loopNum][len(studentsList[loopNum])-1])])
+        tempSList[loopNum] = ([studentsList[loopNum][0]] + list(tempPermutations[permList[loopNum]]) + [int(studentsList[loopNum][len(studentsList[loopNum])-1])])
         if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
             loopNum += 1
+            direction = 0
             solved = True
         elif permList[loopNum] < len(tempPermutations) - 1 :
             permList[loopNum] += 1
         else :
             direction += 1
             loopNum -= direction
-            for i in range(direction) :
-                del tempSList[-1]
-            if loopNum < 0 :
+            if direction > loopNum:
+                for i in range(direction) :
+                    del tempSList[-1]
+            if loopNum < 0 or direction > loopNum :
                 if attempts == len(studentsList) :
                     print("No solution! Final solve:")
                     for item in tempSList :
@@ -190,13 +204,56 @@ while loopNum != len(studentsList) and attempts != len(studentsList) :
                         permList.append(int(0))
                     studentsList.insert(0, studentsList.pop())
                     solved = True
-        print(loopNum,permList,attempts)
+        #print(loopNum,permList,attempts, direction)
     if loopNum == len(studentsList) :
         if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
             solves.append(tempSList)
+    progress(loopNum+(attempts*len(studentsList)), len(studentsList)**2, "Checking permutations")
+for item in tempSList :
+    print(item)
 
-print("===================================================")
 for i, solve in enumerate(solves) :
     print("Solution #" + str(i + 1))
     for item in solve :
         print(item)
+if len(solves) > 0 :
+    choice = 0
+    clear()
+    print("===================================================")
+    print("There were " + str(len(solves)) + " solves found. Enter a number to view, or enter \"save\" to save schedules.")
+    while str(choice).lower() != "save" :
+        choice = input(":")
+        if str(choice).lower() != "save" :
+            try :
+                for item in solves[int(choice)-1] :
+                    print(item)
+            except :
+                print("Please input a valid number.")
+                sleep(2)
+                clear()
+                print("===================================================")
+    correct = False
+    while correct == False :
+        print("What solve to save?")
+        choice = input(":")
+        try :
+            choice = solves[int(choice)-1]
+            correct = True
+        except :
+            print("Please input a valid number.")
+            sleep(2)
+            clear()
+            print("===================================================")
+    with open("MasterSolve.csv", "w") as target:
+        csv_writer = csv.writer(target, dialect="excel")
+        csv_writer.writerows(choice)
+    if os.path.exists("Students") == False :
+        os.makedirs("Students")
+    else :
+        print("WARNING: this will overwrite all files in the Students folder. Proceed? Y/n")
+        sChoice = str(input())
+    if os.path.exists("Teachers") == False :
+        os.makedirs("Teachers")
+    else :
+        print("WARNING: this will overwrite all files in the Teachers folder. Proceed? Y/n")
+        tChoice = str(input())
