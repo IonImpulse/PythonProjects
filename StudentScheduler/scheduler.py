@@ -93,7 +93,9 @@ for i, row in enumerate(tempInputData) :
 #Gets the classes from the data, and maximumStudents
 loopNum = 0
 classInputList = []
+teacherSchedules = []
 while True :
+    teacherSchedules.append(inputDataRaw[loopNum][0])
     classInputList.append(inputDataRaw[loopNum][1])
     loopNum +=1
     if inputDataRaw[loopNum][0] == "Maximum:" :
@@ -247,13 +249,34 @@ if len(solves) > 0 :
     with open("MasterSolve.csv", "w") as target:
         csv_writer = csv.writer(target, dialect="excel")
         csv_writer.writerows(choice)
+    scheduleTimes = ["9:00-10:15", "10:15-11:00", "11:00-12:15", "12:15-1:00", "1:00-2:15"]
     if os.path.exists("Students") == False :
         os.makedirs("Students")
     else :
         print("WARNING: this will overwrite all files in the Students folder. Proceed? Y/n")
         sChoice = str(input())
+    if sChoice.lower() == "y" :
+        for row in choice :
+            with open("Students/Group" + str(row[0]) + ".csv", "w") as target:
+                csv_writer = csv.writer(target, dialect="excel")
+                csv_writer.writerow(["Group " + str(row[0]) + ":","Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+                csv_writer.writerow([scheduleTimes[0],row[1],row[4],row[2],row[5],row[3]])
+                csv_writer.writerow([scheduleTimes[1],"Community Time","Community Time","Community Time","Community Time","Community Time",])
+                csv_writer.writerow([scheduleTimes[2],row[2],row[5],row[3],row[1],row[4]])
+                csv_writer.writerow([scheduleTimes[3],"Lunch","Lunch","Lunch","Lunch","Lunch",])
+                csv_writer.writerow([scheduleTimes[4],row[3],row[1],row[4],row[2],row[5]])
     if os.path.exists("Teachers") == False :
         os.makedirs("Teachers")
     else :
         print("WARNING: this will overwrite all files in the Teachers folder. Proceed? Y/n")
         tChoice = str(input())
+    if tChoice.lower() == "y" :
+        for row in choice :
+            for j, item in enumerate(row) :
+                for k, teacher in enumerate(tempReferenceList) :
+                    for l, sClass in enumerate(teacher) :
+                        if sClass[:4] == item[:4] and item[:3] != "GOA" and placed == False :
+                            for o, testClass in enumerate(teacher) :
+                                if tempTeacherList[k] == False and item != testClass :
+                                    tempTeacherList[k] = True
+                                    placed = True
