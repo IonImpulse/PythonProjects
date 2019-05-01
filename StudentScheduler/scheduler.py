@@ -206,7 +206,7 @@ while loopNum != len(studentsList) and attempts != len(studentsList) :
                         permList.append(int(0))
                     studentsList.insert(0, studentsList.pop())
                     solved = True
-        #print(loopNum,permList,attempts, direction)
+        print(loopNum,permList,attempts, direction)
     if loopNum == len(studentsList) :
         if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
             solves.append(tempSList)
@@ -252,6 +252,7 @@ if len(solves) > 0 :
     scheduleTimes = ["9:00-10:15", "10:15-11:00", "11:00-12:15", "12:15-1:00", "1:00-2:15"]
     if os.path.exists("Students") == False :
         os.makedirs("Students")
+        sChoice = "y"
     else :
         print("WARNING: this will overwrite all files in the Students folder. Proceed? Y/n")
         sChoice = str(input())
@@ -267,6 +268,7 @@ if len(solves) > 0 :
                 csv_writer.writerow([scheduleTimes[4],row[3],row[1],row[4],row[2],row[5]])
     if os.path.exists("Teachers") == False :
         os.makedirs("Teachers")
+        tChoice = "y"
     else :
         print("WARNING: this will overwrite all files in the Teachers folder. Proceed? Y/n")
         tChoice = str(input())
