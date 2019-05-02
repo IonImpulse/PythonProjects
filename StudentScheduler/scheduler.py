@@ -160,6 +160,8 @@ for i in eClassReference :
 #Start the solve. It starts at row A, then keeps going down, making changes until it is correct.
 loopNum = 0
 tempSList = []
+bestFit = []
+bestTime = ()
 restart = False
 previous = 0
 permList = []
@@ -183,6 +185,9 @@ while loopNum != len(studentsList) and attempts != len(studentsList) :
             direction = 0
             solved = True
         elif permList[loopNum] < len(tempPermutations) - 1 :
+            if len(bestFit) < len(tempSList) :
+                bestFit = deepcopy(tempSList)
+                bestTime = (loopNum+(attempts*len(studentsList)), loopNum, attempts)
             permList[loopNum] += 1
         else :
             direction += 1
@@ -206,7 +211,7 @@ while loopNum != len(studentsList) and attempts != len(studentsList) :
                         permList.append(int(0))
                     studentsList.insert(0, studentsList.pop())
                     solved = True
-        print(loopNum,permList,attempts, direction)
+        #print(loopNum,permList,attempts, direction)
     if loopNum == len(studentsList) :
         if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
             solves.append(tempSList)
@@ -282,3 +287,7 @@ if len(solves) > 0 :
                                 if tempTeacherList[k] == False and item != testClass :
                                     tempTeacherList[k] = True
                                     placed = True
+else :
+    for row in bestFit :
+        print(row)
+    print(bestTime)
