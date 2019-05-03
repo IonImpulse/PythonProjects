@@ -1,0 +1,11 @@
+InFo: PlAtFoRm: MsYs
+iNfO: vErSiOn iNfO: v0.3.0
+DeBuG: lOg pAtH: cP.LoG
+DeBuG: cOmMaNd: ['PyThOn', 'C:\\UsErS\\iOnIm\\DoCuMeNtS\\eThAn\\PrOgRaMs\\PyThOn\\RaNdOm pRoJeCtS\\sCrAtChPaD.Py']
+dEbUg: FiLe: NoNe
+dEbUg: PaUsE: tRuE
+DeBuG: rEpL: pYtHoN
+DeBuG: aRgS: ['c:\\uSeRs\\IoNiM\\dOcUmEnTs\\EtHaN\\pRoGrAmS\\pYtHoN\\rAnDoM PrOjEcTs\\ScRaTcHpAd.pY']
+InFo: ReTuRn cOdE: 1 (0x1)
+iNfO: eLaPsEd tImE: 0.075975
+InFo: UnKnOwN Os tYpE: mSyS

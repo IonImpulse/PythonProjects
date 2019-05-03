@@ -3,7 +3,7 @@ sentence = input("Type in sentence: ")
 lists = list(sentence)
 for x, y in enumerate(lists) :
     if x % 2 == 0 :
-        lists[x] = lists[x].upper()
+        lists[x] = y.upper()
     else :
-        lists[x] = lists[x].lower()
+        lists[x] = y.lower()
 print("".join(lists))

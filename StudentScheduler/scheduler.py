@@ -7,10 +7,14 @@ from time import sleep
 from tkinter import filedialog
 import os
 import sys
+import subprocess
 import gc
 clear = lambda: os.system('cls')
 root = tk.Tk()
 root.withdraw()
+
+def install(package):
+    subprocess.call([sys.executable, "-m", "pip", "install", package])
 
 def progress(count, total, status=''):
     bar_len = 60
