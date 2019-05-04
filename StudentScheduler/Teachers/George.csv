@@ -1,0 +1,6 @@
+George:,Monday,Tuesday,Wednesday,Thursday,Friday
+9:00-10:15,"['H200', 15]","['H300', 3]","['H200', 2]","['H300', 7]","['H200', 15]"
+10:15-11:00,Community Time,Community Time,Community Time,Community Time,Community Time
+11:00-12:15,"['H200', 2]","['H300', 7]","['H200', 15]","['H200', 15]","['H300', 3]"
+12:15-1:00,Lunch,Lunch,Lunch,Lunch,Lunch
+1:00-2:15,"['H200', 15]","['H200', 15]","['H300', 3]","['H200', 2]","['H300', 7]"
