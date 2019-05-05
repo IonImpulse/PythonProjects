@@ -93,7 +93,7 @@ except Exception as e:
 tempInputData = deepcopy(inputDataRaw)
 for i, row in enumerate(tempInputData) :
     for j, item in enumerate(row) :
-        inputDataRaw[i][j] = inputDataRaw[i][j].replace(" ","")
+        inputDataRaw[i][j] = (inputDataRaw[i][j].replace(" ","")).replace("/","")
 #Gets the classes from the data, and maximumStudents
 loopNum = 0
 classInputList = []
@@ -178,10 +178,9 @@ direction = 0
 directionAttempts = 0
 
 while loopNum != len(studentsList) and attempts != len(studentsList) :
-    #print("Solving row", loopNum + 1)
     solved = False
     tempSList.append(studentsList[loopNum])
-    print(tempSList, validate(tempSList,classReference,eClassReference,maximumStudents,teacherList))
+    #print(tempSList, validate(tempSList,classReference,eClassReference,maximumStudents,teacherList))
     if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
         loopNum += 1
         direction = 0
@@ -210,32 +209,26 @@ while loopNum != len(studentsList) and attempts != len(studentsList) :
             else :
                 direction = 1
             loopNum -= direction
-            directionAttempts = 0
             if loopNum < 0 or direction > loopNum :
-                if attempts == len(studentsList) :
-                    print("No solution! Final solve:")
-                    for item in tempSList :
-                        print(item)
-                    exit()
-                else :
-                    attempts += 1
-                    loopNum = 0
-                    direction = 0
-                    tempSList = []
-                    permList = []
-                    for i in studentsList :
-                        permList.append(int(0))
-                    studentsList.insert(0, studentsList.pop())
-                    solved = True
+                directionAttempts = 0
+                attempts += 1
+                loopNum = 0
+                direction = 0
+                tempSList = []
+                permList = []
+                for i in studentsList :
+                    permList.append(int(0))
+                studentsList.insert(0, studentsList.pop())
+                solved = True
             if loopNum != len(tempSList)-1 :
                 for i in range(len(tempSList)-loopNum-1) :
-                    print("deleting:",tempSList[-1])
+                    #print("deleting:",tempSList[-1])
                     del tempSList[-1]
-        print(loopNum,permList,attempts,direction)
+        #print(loopNum,permList,attempts,direction)
     if loopNum == len(studentsList) :
         if validate(tempSList,classReference,eClassReference,maximumStudents,teacherList) == True :
             solves.append(tempSList)
-    #progress(loopNum+(attempts*len(studentsList)), len(studentsList)**2, "Checking permutations")
+    progress(loopNum+(attempts*len(studentsList)), len(studentsList)**2, "Checking permutations")
 for item in tempSList :
     print(item)
 
@@ -303,10 +296,6 @@ if len(solves) > 0 :
         del tempTList[0]
         groupSizes = deepcopy(tempTList[-1])
         del tempTList[-1]
-        for i in choice :
-            print(i)
-        for i in tempTList :
-            print(i)
         tempLen = len(teacherList)
         teacherGroups = []
         for i in classReference :
@@ -333,6 +322,9 @@ if len(solves) > 0 :
                 csv_writer.writerow([scheduleTimes[3],"Lunch","Lunch","Lunch","Lunch","Lunch",])
                 csv_writer.writerow([scheduleTimes[4],i[3],i[1],i[4],i[2],i[5]])
 else :
-    for row in bestFit :
-        print(row)
-    print(bestTime)
+    clear()
+    print("No Solution! Saving best fit as \"BestFit.csv\".")
+    with open("BestFit.csv", "w") as target:
+        csv_writer = csv.writer(target, dialect="excel")
+        csv_writer.writerows(bestFit)
+        csv_writer.writerow(["Debug Info:",bestTime])
