@@ -318,8 +318,15 @@ if len(solves) > 0 :
                 csv_writer.writerow([scheduleTimes[4],i[3],i[1],i[4],i[2],i[5]])
 else :
     clear()
-    print("No Solution! Saving best fit as \"BestFit.csv\".")
-    with open("BestFit.csv", "w") as target:
+    loopIndex = 0
+    while inputFile.find("/", loopIndex) != -1 :
+        loopIndex = inputFile.find("/", loopIndex + 1)
+        inputFile = inputFile[loopIndex+1:]
+    inputFile = inputFile[:-4]
+    print("No Solution! Saving best fit as \"BestFit" + str(inputFile) + ".csv\".")
+    with open("BestFit_" + str(inputFile) + ".csv", "w") as target:
         csv_writer = csv.writer(target, dialect="excel")
         csv_writer.writerows(bestFit)
         csv_writer.writerow(["Debug Info:",bestTime])
+    print("Exiting in 5 seconds...")
+    sleep(5)
