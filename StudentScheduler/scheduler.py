@@ -34,6 +34,7 @@ inputFile = filedialog.askopenfilename(filetypes = (("Comma Seperated Values","*
 #Function to check if there are too many classes, too many people per class, or during the same time slot
 def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
     tempReferenceList = deepcopy(eReferenceList)
+    checkingReferenceList = deepcopy(eReferenceList)
     tempLen = len(list[0])
     rList = deepcopy(list)
     for loop, rows in enumerate(list) :
@@ -55,6 +56,7 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
     del tempTList[0]
     del tempTList[tempLen-2]
     tList = []
+    checkingReferenceList = deepcopy(eReferenceList)
     for i in tempTList :
         tList.append(set(i))
     for i, rows in enumerate(tList) :
@@ -63,23 +65,19 @@ def validate(list,referenceList,eReferenceList,maximum,eTeachList) :
             placed = False
             for k, teacher in enumerate(tempReferenceList) :
                 for l, sClass in enumerate(teacher) :
+                    if sClass[:4] == item[:4] :
+                        if checkingReferenceList[k][sClass] < referenceList[k][sClass] :
+                            checkingReferenceList[k][sClass] += 1
+                        else :
+                            return False
                     if sClass[:4] == item[:4] and item[:3] != "GOA" and placed == False :
                         for o, testClass in enumerate(teacher) :
-                            if tempTeacherList[k] == False and item != testClass :
-                                tempTeacherList[k] = True
+                            if item != testClass and tempTeacherList[k] == False :
                                 placed = True
+                                tempTeacherList[k] = True
                             elif tempTeacherList[k] == True and placed == False and item != testClass :
                                 #print("55", item, testClass)
                                 return False
-    for rows in list :
-        loopNum = 0
-        for item in tempReferenceList :
-            for key in item :
-                if tempReferenceList[loopNum][key] > maximum :
-                    #print("51")
-                    return False
-                    break
-            loopNum += 1
     return True
 
 #Imports the data as  a matrix, making sure to not just crash if the file isn't found
@@ -150,13 +148,9 @@ studentsList = sorted(studentsList, key = lambda x: int(x[len(studentsList[0])-1
 #Creates an empty dict to keep track of classes
 loopNum = 0
 eClassReference = deepcopy(classReference)
-for item in classReference :
-    for key in item :
-        if classReference[loopNum][key] > 1 :
-            for i in range(classReference[loopNum][key]-1) :
-                eClassReference[loopNum][str(key)+str(i+1)] = 0
-        eClassReference[loopNum][key] = 0
-    loopNum += 1
+for i,teacher in enumerate(classReference) :
+    for key in teacher :
+        eClassReference[i][key] = 0
 
 teacherList = []
 for i in eClassReference :
@@ -264,16 +258,21 @@ if len(solves) > 0 :
             sleep(2)
             clear()
             print("===================================================")
+    tempTList = [[choice[j][i] for j in range(len(choice))] for i in range(len(choice[0]))]
+    del tempTList[0]
+    groupSizes = [int(i) for i in tempTList[-1]]
+    del tempTList[-1]
     with open("MasterSolve.csv", "w") as target:
         csv_writer = csv.writer(target, dialect="excel")
         csv_writer.writerows(choice)
+        csv_writer.writerow(["Total Students:",sum(groupSizes)])
     scheduleTimes = ["9:00-10:15", "10:15-11:00", "11:00-12:15", "12:15-1:00", "1:00-2:15"]
     if os.path.exists("Students") == False :
         os.makedirs("Students")
         sChoice = "y"
     else :
         print("WARNING: this will overwrite all files in the Students folder. Proceed? Y/n")
-        sChoice = str(input())
+        sChoice = str(input(":"))
     if sChoice.lower() == "y" :
         for row in choice :
             with open("Students/Group" + str(row[0]) + ".csv", "w") as target:
@@ -289,13 +288,9 @@ if len(solves) > 0 :
         tChoice = "y"
     else :
         print("WARNING: this will overwrite all files in the Teachers folder. Proceed? Y/n")
-        tChoice = str(input())
+        tChoice = str(input(":"))
     #tempSList,classReference,eClassReference,maximumStudents,teacherList
     if tChoice.lower() == "y" :
-        tempTList = [[choice[j][i] for j in range(len(choice))] for i in range(len(choice[0]))]
-        del tempTList[0]
-        groupSizes = deepcopy(tempTList[-1])
-        del tempTList[-1]
         tempLen = len(teacherList)
         teacherGroups = []
         for i in classReference :
@@ -306,10 +301,10 @@ if len(solves) > 0 :
                 for k, item in enumerate(period) :
                     if item in teacherGroups[i] :
                         if placed == False :
-                            teacherSchedules[i].append([item,int(groupSizes[k])])
+                            teacherSchedules[i].append([item,groupSizes[k]])
                             placed = True
                         else :
-                            teacherSchedules[i][j+1][1] += int(groupSizes[k])
+                            teacherSchedules[i][j+1][1] += groupSizes[k]
                 if placed == False :
                     teacherSchedules[i].append(["Break",0])
         for i in teacherSchedules :

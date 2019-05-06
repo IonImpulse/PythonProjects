@@ -1,6 +1,6 @@
 Ananya:,Monday,Tuesday,Wednesday,Thursday,Friday
-9:00-10:15,"['M200', 15]","['Break', 0]","['M200', 11]","['Break', 0]","['Break', 0]"
+9:00-10:15,"['Break', 0]","['Break', 0]","['M200', 1]","['Break', 0]","['Break', 0]"
 10:15-11:00,Community Time,Community Time,Community Time,Community Time,Community Time
-11:00-12:15,"['M200', 11]","['Break', 0]","['Break', 0]","['M200', 15]","['Break', 0]"
+11:00-12:15,"['M200', 1]","['Break', 0]","['Break', 0]","['Break', 0]","['Break', 0]"
 12:15-1:00,Lunch,Lunch,Lunch,Lunch,Lunch
-1:00-2:15,"['Break', 0]","['M200', 15]","['Break', 0]","['M200', 11]","['Break', 0]"
+1:00-2:15,"['Break', 0]","['Break', 0]","['Break', 0]","['M200', 1]","['Break', 0]"
