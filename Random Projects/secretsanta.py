@@ -41,5 +41,5 @@ while True :
         except IndexError:
             print("Out of range!")
             sleep(1)
-    if choice == "exit" or choice == "Exit" :
+    if choice.lower() == "exit" :
         break

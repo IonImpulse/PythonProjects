@@ -41,6 +41,7 @@ while round(s,5) != round(e,5) :
         print("No Solution")
         break
     s = ts[0]
+    tempList = [s]
     for j in range(ts[2]) :
         if str(ops[o[j]])[:1] == "*" :
             s = float(str(ops[o[j]])[1:]) * s
@@ -64,7 +65,8 @@ while round(s,5) != round(e,5) :
                 s = float(str(int(round(s,0)))[:-1])
         else :
             s = float(str(int(round(s,0)))+str(ops[o[j]]))
+        tempList.append(s)
     if round(s,5) == round(e,5) :
         for i in o :
-            print(ops[i])
+            print(ops[i], tempList[i])
     iterate(o,ts[3]-1)
