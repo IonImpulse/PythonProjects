@@ -1,4 +1,3 @@
-import random
 sentence = ""
 print("Type in sentence, \"exit\" to close: ")
 while sentence.lower() != "exit" :
