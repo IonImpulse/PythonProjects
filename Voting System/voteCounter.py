@@ -9,7 +9,7 @@ root.withdraw()
 
 def findSmallest(data,iteration) :
     smallest = sorted(data, key = lambda x: x[iteration])
-    return(smallest[0])
+    return(smallest[iteration])
 
 inputFile = filedialog.askopenfilename(filetypes = (("Comma Seperated Values","*.csv"),("All files", "*.*")))
 try:
