@@ -7,9 +7,22 @@ root = tk.Tk()
 user = os.environ.get('USERNAME')
 root.withdraw()
 
-def findSmallest(data,iteration) :
-    smallest = sorted(data, key = lambda x: x[iteration])
-    return(smallest[iteration])
+def findSmallest(data,iteration=0) :
+    if len(data[0])-1 < iteration :
+        return(data,"tie")
+    else :
+        smallestTemp = sorted(data, key = lambda x: x[iteration])
+        print("sorted:", smallestTemp)
+        smallestTempInt = smallestTemp[0][iteration]
+        smallest = []
+        for i in smallestTemp :
+            if i[iteration] == smallestTempInt :
+                smallest.append(i)
+        if len(smallest) > 0 :
+            print(smallest, iteration)
+            findSmallest(smallest,iteration+1)
+        else :
+            return(smallest)
 
 inputFile = filedialog.askopenfilename(filetypes = (("Comma Seperated Values","*.csv"),("All files", "*.*")))
 try:
@@ -44,4 +57,5 @@ for index, i in enumerate(voteList) :
         print("The winner is: " + str(selected))
         exit()
 while selected == False :
-    print(findSmallest(voteList,0))
+    print(findSmallest(voteList))
+    input()
