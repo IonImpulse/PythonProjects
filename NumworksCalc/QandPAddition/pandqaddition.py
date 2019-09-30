@@ -31,4 +31,4 @@ linFunction.append(linSlope - linFunction[0] - linFunction[2])
 linFunction.append((linSlope * linFunction[4]) + linIntercept)
 
 print("\nP + Q:")
-print("X = " + str(linFunction[4]) + "\nY = " + str(0 - linFunction[5]))
+print("X = " + str(linFunction[4]) + "\nY = " + str(-1 * linFunction[5]))
