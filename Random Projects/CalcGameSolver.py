@@ -3,7 +3,6 @@
 #Reverse is >, and backspace is <
 #Change number is number-number
 from math import *
-from random import *
 def iterate(intList, top) :
     iter = False
     j = len(intList)-1
