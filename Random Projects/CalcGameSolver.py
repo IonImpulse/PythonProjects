@@ -91,4 +91,3 @@ while solved == False :
         if choice.lower() == "n" :
             solved = True
     iterate(o,ts[3]-1)
-input()
