@@ -1,8 +1,8 @@
 #For operations, use +,-,*, and / before to indicate operations. Ex: *3
 #For putting numbers on the end, just put the number. Ex: 3
 #Reverse is >, and backspace is <
+#Change number is number-number
 from math import *
-from random import *
 def iterate(intList, top) :
     iter = False
     j = len(intList)-1
@@ -36,7 +36,10 @@ endList = []
 for i in range(ts[2]) :
     o.append(0)
     endList.append(ts[3]-1)
-while round(s,5) != round(e,5) :
+
+solved = False
+numberOfSolves = 0
+while solved == False :
     if endList == o :
         print("No Solution")
         break
@@ -53,6 +56,18 @@ while round(s,5) != round(e,5) :
             s = s - float(str(ops[o[j]])[1:])
         elif str(ops[o[j]])[:1] == "^" :
             s = s ** float(str(ops[o[j]])[1:])
+        elif len(str(ops[o[j]])) > 1 :
+            if ">" in str(ops[o[j]]) :
+                pos = str(ops[o[j]]).index(">")
+                start = int(str(ops[o[j]])[:pos])
+                end = int(str(ops[o[j]])[pos + 1:])
+                number = ""
+                for i in str(s) :
+                    if i == str(start) :
+                        number += str(end)
+                    else :
+                        number += str(i)
+            s = float(number)
         elif str(ops[o[j]])[:1]== ">" :
             if s < 0 :
                 s = -(float(str(int(round(-s,0)))[::-1]))
@@ -67,6 +82,12 @@ while round(s,5) != round(e,5) :
             s = float(str(int(round(s,0)))+str(ops[o[j]]))
         tempList.append(s)
     if round(s,5) == round(e,5) :
+        numberOfSolves += 1
+        print("Solve # " + str(numberOfSolves))
         for index, i in enumerate(o) :
-            print(ops[i], tempList[index])
+            print(ops[i], tempList[index + 1])
+        print("Continue? Y/n")
+        choice = input(":")
+        if choice.lower() == "n" :
+            solved = True
     iterate(o,ts[3]-1)
