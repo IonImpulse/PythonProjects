@@ -38,6 +38,11 @@ print(inputDir)
 filesList = os.listdir(inputDir)
 dataSet = []
 
+print("Files found:")
+for index, file in enumerate(filesList) :
+    print(str(index) + ": " + str(file))
+
+input()
 for i in filesList :
     if i[-3:] == "csv" :
         try:
