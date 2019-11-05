@@ -38,6 +38,7 @@ print(inputDir)
 filesList = os.listdir(inputDir)
 dataSet = []
 
+serverName = 
 print("Files found:")
 for index, file in enumerate(filesList) :
     print(str(index) + ": " + str(file))
