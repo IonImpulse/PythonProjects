@@ -38,12 +38,69 @@ print(inputDir)
 filesList = os.listdir(inputDir)
 dataSet = []
 
-serverName = 
+serverName = filesList[0][:filesList[0].index(" - ")]
+print("==" + str(serverName) + "==")
 print("Files found:")
 for index, file in enumerate(filesList) :
-    print(str(index) + ": " + str(file))
+    print(str(index) + ": " + str(file[file.index(" - ") + 3:]))
 
-input()
+print("\nSelect quote channels? Y/n")
+choice = input(":")
+
+quoteChannels = []
+
+if choice.lower() == "y" :
+    moreQuotes = True
+    while moreQuotes == True :
+        print("Channel number?")
+        quoteChannels.append(input(":"))
+        if quoteChannels[-1] == "n" :
+            moreQuotes = False
+            del quoteChannels[-1]
+        else :
+            try:
+                quoteChannels[-1] = int(quoteChannels[-1])
+            except Exception as e:
+                print("Input a number. Try again...")
+                del quoteChannels[-1]
+
+if len(quoteChannels) > 0 :
+    quoteRawData = []
+    userList = []
+    nameKey = {}
+    quotesByUser = {}
+    quotesByPoster = {}
+
+    print("Load name-key file? Y/n")
+    choice = input(":")
+
+    if choice.lower() == "y" :
+        nameKeyFile = filedialog.askopenfilename(filetypes = (("Plaintext","*.txt"),("All files", "*.*")))
+        with open(nameKeyFile, 'r') as keyFile :
+            nameKey = keyFile.readlines()
+
+    for i in quoteChannels :
+        tempInputString = inputDir + "\\" + filesList[i]
+        with open(tempInputString, newline = "", encoding="utf8") as file :
+            quoteRawData += [row for row in csv.reader(file, delimiter = ';')][1:]
+
+    for index, row in enumerate(quoteRawData) :
+        clear()
+        progress(index, len(quoteRawData), status='Parsing quoteboard')
+
+        if row[0] not in userList :
+            userList.append(row[0])
+            quotesByPoster[row[0]] = []
+
+            if row[0] not in nameKey :
+                print("Real name not found. Please enter name for \"" + str(row[0]) + "\"")
+                tempName = input(":")
+                nameKey[row[0]] = tempName
+
+            quotesByUser[nameKey[row[0]]] = []
+
+    print(nameKey)
+    input()
 for i in filesList :
     if i[-3:] == "csv" :
         try:
@@ -175,6 +232,9 @@ for index, i in enumerate(userList) :
             csv_writer.writerow(["Count per word of: " + str(i)])
             csv_writer.writerows(userVocabCountSorted[index])
 
+if len(quoteChannels) > 0 :
+    with open(exportPath + "Quoteboard.csv", "w", newline='', encoding="utf8") as target :
+        pass
 #Include:
 #-Top ten-fifty words on server - DONE
 #-Sorted list of users by message - DONE
