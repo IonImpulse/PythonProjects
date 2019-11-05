@@ -23,14 +23,18 @@ def progress(count, total, status=''):
     sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
     sys.stdout.flush()
 
-def makeWords(inputString, removePunc = True) :
-    if removePunc == True :
-        inputString = inputString.replace(",", "")
-        inputString = inputString.replace(".", "")
-        inputString = inputString.replace("!", "")
-        inputString = inputString.replace("?", "")
-        inputString = inputString.replace("\"", "")
-        inputString = inputString.replace("*", "")
+def removePunc(inputString) :
+    inputString = inputString.replace(",", "")
+    inputString = inputString.replace(".", "")
+    inputString = inputString.replace("!", "")
+    inputString = inputString.replace("?", "")
+    inputString = inputString.replace("\"", "")
+    inputString = inputString.replace("*", "")
+    return inputString
+
+def makeWords(inputString, removePunct = True) :
+    if removePunct == True :
+        inputString = removePunc(inputString)
     inputString = ''.join(inputString).split()
     return inputString
 
@@ -147,6 +151,7 @@ if len(quoteChannels) > 0 :
         print(i)
         for j in range(2) :
             quoteOutput[i][j] = quoteOutput[i][j].replace('\"', '')
+
     print(nameKey)
     input()
 for i in filesList :
@@ -264,9 +269,9 @@ with open(exportPath + "Server.csv", "w", newline='', encoding="utf8") as target
     csv_writer.writerow(["-----------------------------"])
     csv_writer.writerows(wordCountSorted)
 
+if os.path.exists(exportPath + "Users\\") == False :
+    os.makedirs(exportPath + "Users\\")
 for index, i in enumerate(userList) :
-    if os.path.exists(exportPath + "Users\\") == False :
-        os.makedirs(exportPath + "Users\\")
     tempI = i.replace("/", "")
     tempI = tempI.replace("\\", "")
     tempI = tempI.replace(":", "")
@@ -280,9 +285,22 @@ for index, i in enumerate(userList) :
             csv_writer.writerow(["Count per word of: " + str(i)])
             csv_writer.writerows(userVocabCountSorted[index])
 
+
+
 if len(quoteChannels) > 0 :
+    if os.path.exists(exportPath + "Quotes\\") == False :
+        os.makedirs(exportPath + "Quotes\\")
+
     with open(exportPath + "Quoteboard.csv", "w", newline='', encoding="utf8") as target :
         pass
+
+    for index, i in enumerate(nameList) :
+        with open(exportPath + "Quotes\\" + str(removePunc(i)) + "-Quotes.csv", "w", newline='', encoding="utf8") as target :
+            csv_writer = csv.writer(target, dialect="excel")
+            csv_writer.writerow(["Quotes of " + str(removePunc(i))])
+            for j in quoteOutput :
+                if removePunc(j[1].lower()) == removePunc(i.lower()) :
+                    csv_writer.writerow([j[2], "Quoted by " + str(nameKey[j[0]])])
 #Include:
 #-Top ten-fifty words on server - DONE
 #-Sorted list of users by message - DONE
