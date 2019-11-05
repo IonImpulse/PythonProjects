@@ -12,6 +12,9 @@ root = tk.Tk()
 user = os.environ.get('USERNAME')
 root.withdraw()
 
+if os.path.exists("C:\\Users\\" + str(user) + "\\Documents\\DiscordData\\") == False :
+    os.makedirs("C:\\Users\\" + str(user) + "\\Documents\\DiscordData\\")
+
 def progress(count, total, status=''):
     bar_len = 50
     filled_len = int(round(bar_len * count / float(total)))
@@ -30,6 +33,23 @@ def makeWords(inputString, removePunc = True) :
         inputString = inputString.replace("*", "")
     inputString = ''.join(inputString).split()
     return inputString
+
+def splitQuotes(inputString) :
+    tempDashPos = inputString.find("-")
+    tempSpacePos = inputString.find(" ", tempDashPos + 2)
+    print(tempDashPos, tempSpacePos)
+    try:
+        if tempSpacePos == -1 :
+            tempName = inputString[tempDashPos + 1:]
+        else :
+            tempName = inputString[tempDashPos + 1:tempSpacePos]
+        print(tempName)
+        outputString = inputString[:tempDashPos].replace('\"', '')
+        print(outputString)
+    except Exception as e:
+        raise
+
+    return [tempName, outputString]
 
 #Input section
 inputDir = filedialog.askdirectory()
@@ -66,7 +86,7 @@ if choice.lower() == "y" :
 
 if len(quoteChannels) > 0 :
     quoteRawData = []
-    userList = []
+    nameList = []
     nameKey = {}
     quotesByUser = {}
     quotesByPoster = {}
@@ -77,28 +97,56 @@ if len(quoteChannels) > 0 :
     if choice.lower() == "y" :
         nameKeyFile = filedialog.askopenfilename(filetypes = (("Plaintext","*.txt"),("All files", "*.*")))
         with open(nameKeyFile, 'r') as keyFile :
-            nameKey = keyFile.readlines()
-
+            nameKey = eval(keyFile.readline())
+            print(nameKey)
+            input()
     for i in quoteChannels :
         tempInputString = inputDir + "\\" + filesList[i]
         with open(tempInputString, newline = "", encoding="utf8") as file :
             quoteRawData += [row for row in csv.reader(file, delimiter = ';')][1:]
 
-    for index, row in enumerate(quoteRawData) :
-        clear()
-        progress(index, len(quoteRawData), status='Parsing quoteboard')
-
-        if row[0] not in userList :
-            userList.append(row[0])
+    rowNumber = 0
+    quoteOutput = []
+    while rowNumber < len(quoteRawData) :
+        row = quoteRawData[rowNumber]
+        if row[0] not in quotesByPoster :
             quotesByPoster[row[0]] = []
 
             if row[0] not in nameKey :
+                clear()
                 print("Real name not found. Please enter name for \"" + str(row[0]) + "\"")
                 tempName = input(":")
                 nameKey[row[0]] = tempName
 
             quotesByUser[nameKey[row[0]]] = []
 
+        splitRow = splitQuotes(row[2])
+
+        if splitRow[0] != '' :
+            if splitRow[0] not in nameList :
+                nameList.append(splitRow[0])
+
+            if splitRow[1].replace(' ', '') == '' and row[3] != '' :
+                quoteOutput.append([row[0], splitRow[0], row[3]])
+            elif  splitRow[1].replace(' ', '') == '' :
+                quoteOutput[-1] = [quoteOutput[-1][0], splitRow[0], quoteOutput[-1][2]]
+            else :
+                quoteOutput.append([row[0], splitRow[0], splitRow[1]])
+        else :
+            if row[3] != '' :
+                quoteOutput.append([row[0], "", row[3]])
+            else :
+                quoteOutput.append([row[0], "", row[2]])
+
+        rowNumber += 1
+
+    with open("C:\\Users\\" + str(user) + "\\Documents\\DiscordData\\namekey.txt", 'w') as keyFile :
+        print(nameKey, file=keyFile)
+
+    for i in range(len(quoteOutput)) :
+        print(i)
+        for j in range(2) :
+            quoteOutput[i][j] = quoteOutput[i][j].replace('\"', '')
     print(nameKey)
     input()
 for i in filesList :
@@ -188,7 +236,7 @@ if os.path.exists(exportPath) == False :
 
 with open(exportPath + "Server.csv", "w", newline='', encoding="utf8") as target :
     csv_writer = csv.writer(target, dialect="excel")
-    csv_writer.writerow(["Statistics for: " + str(saveName)])
+    csv_writer.writerow(["Statistics for: " + str(serverName)])
 
     csv_writer.writerow(["-----------------------------"])
     csv_writer.writerow(["List of Users:"])
