@@ -26,10 +26,15 @@ if os.path.exists(outputDirectory) == False :
 
 imagePrefix = "IMG_"
 
+print("Start at message:")
+start = input(":")
+
 with open(inputFile, newline = "", encoding="utf8") as file :
     fileRawData = [row for row in csv.reader(file, delimiter = ';')]
 
 requestList = [[],[],[]]
+
+fileRawData = fileRawData[0:]
 
 for index, i in enumerate(fileRawData) :
     if i[3] != "" :
@@ -44,9 +49,10 @@ for index, j in enumerate(requestList[2]) :
     print("Found " + str(len(tempURLS)) + " photo(s)")
     for i in tempURLS :
         try:
-            tempImg = requests.get(i)
-            outputPath = outputDirectory + '\\' + imagePrefix + str(counter) + '.' + tempImg.url.split('.')[-1]
-            open(outputPath, 'wb').write(tempImg.content)
+            if index >= int(start) :
+                tempImg = requests.get(i)
+                outputPath = outputDirectory + '\\' + imagePrefix + str(counter) + '.' + tempImg.url.split('.')[-1]
+                open(outputPath, 'wb').write(tempImg.content)
             counter += 1
         except Exception as e:
             print(e)
