@@ -24,11 +24,13 @@ def progress(count, total, status=''):
     sys.stdout.flush()
 
 def removePunc(inputString) :
+    inputString = inputString.replace(" ", "")
     inputString = inputString.replace(",", "")
     inputString = inputString.replace(".", "")
     inputString = inputString.replace("!", "")
     inputString = inputString.replace("?", "")
     inputString = inputString.replace("\"", "")
+    inputString = inputString.replace('\n', "")
     inputString = inputString.replace("*", "")
     return inputString
 
@@ -127,8 +129,8 @@ if len(quoteChannels) > 0 :
         splitRow = splitQuotes(row[2])
 
         if splitRow[0] != '' :
-            if splitRow[0] not in nameList :
-                nameList.append(splitRow[0])
+            if removePunc(splitRow[0]).lower() not in nameList :
+                nameList.append(removePunc(splitRow[0]).lower())
 
             if splitRow[1].replace(' ', '') == '' and row[3] != '' :
                 quoteOutput.append([row[0], splitRow[0], row[3]])
@@ -298,9 +300,14 @@ if len(quoteChannels) > 0 :
         with open(exportPath + "Quotes\\" + str(removePunc(i)) + "-Quotes.csv", "w", newline='', encoding="utf8") as target :
             csv_writer = csv.writer(target, dialect="excel")
             csv_writer.writerow(["Quotes of " + str(removePunc(i))])
+            quotes = False
             for j in quoteOutput :
                 if removePunc(j[1].lower()) == removePunc(i.lower()) :
-                    csv_writer.writerow([j[2], "Quoted by " + str(nameKey[j[0]])])
+                    csv_writer.writerow([j[2].replace("\"", ""), "Quoted by " + str(nameKey[j[0]])])
+                    quotes = True
+
+        if quotes == False :
+            os.remove(exportPath + "Quotes\\" + str(removePunc(i)) + "-Quotes.csv")
 #Include:
 #-Top ten-fifty words on server - DONE
 #-Sorted list of users by message - DONE
