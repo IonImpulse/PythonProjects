@@ -2,7 +2,7 @@ import requests, json
 
 URL = "http://stupidstuff.org/thugwar/scout.php"
 
-datas = "turns=100&scoutbt=Scout+for+Hoes&act=scout"
+datas = "turns=60&scoutbt=Scout+for+Hoes&act=scout"
 buy = "buybeer=&buycondoms=5000&buycrack=5000&buyweed=&buyguns=&buythugs=&buylowriders=&action=Buy+me+dis+here+stuff&act=buy"
 header = {"Host": "stupidstuff.org",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Gecko/20100101 Firefox/73.0",
