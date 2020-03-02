@@ -2,7 +2,7 @@ from geopy.distance import geodesic
 from geopy.geocoders import Nominatim
 import csv
 
-geolocator = Nominatim(user_agent="edv121@outlook.com")
+geolocator = Nominatim(user_agent="edv121@outlook.com", timeout=10)
 
 location = geolocator.geocode("160 John St, Seattle, WA 98109")
 The_Downtown_School_A_Lakeside_School = (location.latitude, location.longitude)
