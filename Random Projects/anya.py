@@ -1,62 +1,127 @@
-from geopy.distance import geodesic
-from geopy.geocoders import Nominatim
+import censusgeocode as cg
 import csv
 import tkinter as tk
 from tkinter import filedialog
 from time import sleep
+import math
+import os
 
-def getLocation(inLocation, timeoutNum = 10) :
-    if timeoutNum != 0 :
-        try:
-            location = geolocator.geocode(inLocation)
-        except Exception as e:
-            location = getLocation(inLocation, timeoutNum - 1)
-    else :
-        print("Timeout, waiting 1 minute")
-        sleep(60)
-        location = getLocation(inLocation)
-    return location
+def getDistance(origin, destination):
+    """
+    Calculate the Haversine distance.
+
+    Parameters
+    ----------
+    origin : tuple of float
+        (lat, long)
+    destination : tuple of float
+        (lat, long)
+
+    Returns
+    -------
+    distance_in_miles : float
+
+    Examples
+    --------
+    >>> origin = (48.1372, 11.5756)  # Munich
+    >>> destination = (52.5186, 13.4083)  # Berlin
+    >>> round(distance(origin, destination), 1)
+    504.2
+    """
+    lat1, lon1 = origin
+    lat2, lon2 = destination
+    radius = 6371  # km
+
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (math.sin(dlat / 2) * math.sin(dlat / 2) +
+         math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+         math.sin(dlon / 2) * math.sin(dlon / 2))
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    d = radius * c * 0.6213712
+
+    return d
 
 root = tk.Tk()
 root.withdraw()
 
-geolocator = Nominatim(user_agent="edv121@outlook.com", timeout=5)
-
-location = getLocation("160 John St, Seattle, WA 98109")
-The_Downtown_School_A_Lakeside_School = (location.latitude, location.longitude)
-
+#location = cg.onelineaddress("160 John St, Seattle, WA 98109")[0]["coordinates"]
+The_Downtown_School_A_Lakeside_School = (47.61977, -122.35337)
+print(The_Downtown_School_A_Lakeside_School)
 inputFile = filedialog.askopenfilename(filetypes = (("Comma Seperated Values","*.csv"),("All files", "*.*")))
 
-with open("inputFile", newline = "") as file :
+with open(inputFile, newline = "") as file :
     inputDataRaw = [row for row in csv.reader(file)]
 
 total = len(inputDataRaw)
-print("Grabbed file with " + str(total) + " colleges. Starting geopy requests...")
+print("Grabbed file with " + str(total) + " colleges.\n")
+print("1: Use U.S Census")
+print("2: Provide lat/long file")
+choice = input(":")
 
-outputTable = [["Name","Address","Distance from DTS"]]
+NUMBER_OF_ROWS = 1000
 
-for index, school in enumerate(inputDataRaw) :
-    if index % 100 == 0 :
-        with open("OutputDistances.csv", "w", newline = "") as file :
-            csv_writer = csv.writer(file, dialect='excel')
-            for i in outputTable:
-                csv_writer.writerow(i)    
-            outputTable = []
-    
-    if school[2] == "Institution" :
-        location = getLocation(school[1])
-        
-        if location != None :
-            location = (location.latitude, location.longitude)
-            distance = geodesic(The_Downtown_School_A_Lakeside_School, location).miles
-            print(str(index) + "out of " + str(total) + "\nLocation: " + school[0] + "\nDistance: " + str(distance))
-            print("")
-            outputTable.append([school[0], school[1], distance])
+if choice == "1" :
+    recieveData = []
+    top = math.ceil(len(inputDataRaw)/NUMBER_OF_ROWS)
+    for send in range(top) :
+        if send == top - 1 :
+            end = len(inputDataRaw) - 1
         else :
-            print("Skipping " + school[0])
-            print("")
+            end = (send + 1) * NUMBER_OF_ROWS
+        with open("tempSend.csv", "w", newline = "") as file:
+            csv_writer = csv.writer(file, dialect='excel')
+            for index, row in enumerate(inputDataRaw[send*NUMBER_OF_ROWS:end]) :
+                if row[2] == "Institution" :
+                    try:
+                        temp = row[1].split(", ")
+                        if len(temp) > 3 :
+                            temp2 = "\""
+                            for i in range(len(temp) - 2) :
+                                temp2 += " " + temp[i]
+                            temp2 += "\""
+                            temp = [temp2, temp[-2], temp[-1]]
+                        temp[2] = temp[2].split(" ")
+                        if len(temp[2]) == 1 :
+                            temp[2].append("-")
+                        toWrite = [row[0], temp[0], temp[1], temp[2][0], temp[2][1]]
+                        csv_writer.writerow(toWrite)
+                    except Exception as e:
+                        pass
+            file.close()
+        print(str(send) + " out of " + str(top) + ". Getting Data...\n")
+        currentBatch = cg.addressbatch("tempSend.csv")
+        recieveData += currentBatch
+        sleep(1)
+        os.remove("tempSend.csv")
+        sleep(5)
+        print("Done!\n")
+        with open("OutReceive.csv", "a", newline = "") as file :  
+            csv_writer = csv.writer(file, dialect='excel')
+            csv_writer.writerows(currentBatch)
 
-with open("OutputDistances.csv", "w", newline = "") as file :
+if choice == "2" :
+    inputFile = filedialog.askopenfilename(filetypes = (("Comma Seperated Values","*.csv"),("All files", "*.*")))
+    
+    with open(inputFile, newline = "") as file :
+        recieveData = [eval(row) for row in csv.reader(file)]
+    
+totalDone = 0
+total = len(recieveData)
+print(recieveData)
+with open("OutputDistances.csv", "w", newline = "") as file :  
     csv_writer = csv.writer(file, dialect='excel')
-    for i in outputTable:
-        csv_writer.writerow(i)
+    csv_writer.writerow(["School", "Address", "Lat/Lon", "Distance (Miles)"])
+    for index, school in enumerate(recieveData) :    
+        
+        collegeLocation = (school["lat"], school["lon"])
+
+        if collegeLocation[0] != None :
+            distance = getDistance(The_Downtown_School_A_Lakeside_School, collegeLocation)
+
+            print(str(index) + " out of " + str(total) + "\nLocation: " + school["id"] + "\nDistance: " + str(distance))
+            
+            csv_writer.writerow([school["id"], school["address"], collegeLocation, distance])
+        print("Total done: " + str(index) + "\n")
+
+    file.close()
