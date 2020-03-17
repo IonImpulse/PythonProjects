@@ -94,4 +94,3 @@ try :
     print("Ratio " + str(crow/total))
 except Exception as e :
     print("Ratio Division by Zero")
-
