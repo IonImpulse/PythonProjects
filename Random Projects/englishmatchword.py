@@ -16,15 +16,64 @@ def getSyn(inputWord) :
             outList.append(l.name())
     return list(set(outList))
 
+def clean_word(word) :
+    word = word.replace(" ", "").replace(",", "").replace(".", "").replace(":", "").replace("\"", "")
+
+    return word.lower()
+def getChanges(input_word) :
+    top20 = []
+
+    inputSynList = getSyn(input_word)
+    top = len(inputSynList) - 1
+
+    for i in range(top) :
+        tempList = getSyn(inputSynList[i])
+        for j in tempList :
+            inputSynList.append(j)
+
+    for index, synonymList in enumerate(synonyms) :
+        wordCount = 0
+
+        for syn in inputSynList :
+            if input_word in synonymList :
+                wordCount += 100
+            if syn in synonymList :
+                wordCount += 1
+
+        if wordCount > 0 :
+            if len(top20) > 0 :
+                if top20[0][0] < wordCount :
+                    top20.append([wordCount, vocab[index]])
+                    top20 = sorted(top20, key = lambda x: int(x[0]), reverse=False)
+                if len(top20) > 20 :
+                    del top20[20]
+            else  :
+                top20.append([wordCount, vocab[index]])
+    
+    top20 = sorted(top20, key = lambda x: int(x[0]), reverse=True)
+    return top20
+
 inputFile = filedialog.askopenfilename(filetypes = (("Text File","*.txt"),("All files", "*.*")))
 
+changeFile = filedialog.askopenfilename(filetypes = (("Text File","*.txt"),("All files", "*.*")))
 file = open(inputFile, "r", newline = "\n")
 
 rawInputData = file.readlines()
 
-vocab = [i.lower()[:i.rfind("\t")] for i in rawInputData]
+file = open(changeFile, "r", newline = "\n")
+
+changeData = file.readlines()
+
+vocab = []
+
+for index, i in enumerate(rawInputData) :
+    if i.replace(" ", "")[:9] != "antonyms:" and len(i) > 2:
+        vocab.append(i.lower()[:i.rfind("\t")])
+
 total = len(vocab) - 1
 
+
+print(vocab)
 synonyms = []
 
 for i in range(total) :
@@ -40,43 +89,38 @@ for i in range(total) :
 
 choice = ""
 
-while(choice.lower() != "exit") :
-    print("Word?")
-    choice = input(":").lower()
+words_to_change = []
 
-    top20 = []
+for l_pos, line in enumerate(changeData) :
+    for w_pos, word in enumerate(line.split(" ")) :
+        print(clean_word(word))
+        possible_changes = getChanges(clean_word(word))
+        
+        if len(possible_changes) > 0 :
+            print("\n")
+            print(line)
+            print("Word on line " + str(l_pos) + ", word " + str(w_pos) + "")
+            print("Change " + str(word) + " to:")
+            print("0: No Change")
 
-    inputSynList = getSyn(choice)
-    top = len(inputSynList) - 1
+            for index, i in enumerate(possible_changes) :
+                print(str(index + 1) + ": " + str(i))
 
-    for i in range(top) :
-        tempList = getSyn(inputSynList[i])
-        for j in tempList :
-            inputSynList.append(j)
+            selection = -1
 
-    print(inputSynList)
-    for index, synonymList in enumerate(synonyms) :
-        print(synonymList)
-        wordCount = 0
+            while selection == -1 :
+                choice = input(":")
+                try : 
+                    selection = int(choice)
+                    if selection > len(possible_changes) :
+                        print("Please input a valid number")
+                        selection = -1
 
-        for syn in inputSynList :
-            if choice in synonymList :
-                wordCount += 100
-            if syn in synonymList :
-                wordCount += 1
+                except Exception as e :
+                    print("Please input a valid number")
 
-        if wordCount > 0 :
-            if len(top20) > 0 :
-                if top20[0][0] < wordCount :
-                    top20.append([wordCount, index])
-                    top20 = sorted(top20, key = lambda x: int(x[0]), reverse=False)
-                    print(top20)
-                if len(top20) > 20 :
-                    del top20[20]
-            else  :
-                top20.append([wordCount, index])
-    
-    top20 = sorted(top20, key = lambda x: int(x[0]), reverse=True)
-    for i in top20 :
-        print(vocab[i[1]], i[0])
-    print("\n")
+            if selection != 0 :
+                words_to_change.append([word, possible_changes[selection-1], l_pos, w_pos])
+
+for i in words_to_change :
+    print(i)

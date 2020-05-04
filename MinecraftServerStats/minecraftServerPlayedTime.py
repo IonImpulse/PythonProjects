@@ -131,7 +131,7 @@ for person in playerList :
         print(ip)
     print("---------------------------------------")
 
-    outputArray.append([playerList[person].name, playerList[person].computedSeconds, str(hours) + ":" + str(minutes) + ":" + str(seconds),playerList[person].numOfMessages])
+    outputArray.append([playerList[person].name, playerList[person].computedSeconds, str(hours) + ":" + str(minutes) + ":" + str(seconds),playerList[person].numOfMessages, playerList[person].ipList])
 
 outputArray[1:] = sorted(outputArray[1:],key=lambda row: int(row[1]), reverse=True)
 
