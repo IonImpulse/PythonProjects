@@ -62,8 +62,19 @@ rawInputData = file.readlines()
 
 file = open(changeFile, "r", newline = "\n")
 
-changeData = file.readlines()
+rawChangeData = file.readlines()
 
+changeData = []
+
+for line in rawChangeData :
+    temp = line.split(". ")
+
+    for i in temp :
+        if i != "\r\n" :    
+            changeData.append(i)
+
+
+print(changeData)
 vocab = []
 
 for index, i in enumerate(rawInputData) :
@@ -100,7 +111,7 @@ for l_pos, line in enumerate(changeData) :
             print("\n")
             print(line)
             print("Word on line " + str(l_pos) + ", word " + str(w_pos) + "")
-            print("Change " + str(word) + " to:")
+            print("Change [" + str(word) + "] to:")
             print("0: No Change")
 
             for index, i in enumerate(possible_changes) :
