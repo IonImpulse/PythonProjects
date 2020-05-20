@@ -62,7 +62,7 @@ choice = input(":")
 NUMBER_OF_ROWS = 1000
 
 if choice == "1" :
-    recieveData = []
+    receiveData = []
     top = math.ceil(len(inputDataRaw)/NUMBER_OF_ROWS)
     for send in range(top) :
         if send == top - 1 :
@@ -85,13 +85,14 @@ if choice == "1" :
                         if len(temp[2]) == 1 :
                             temp[2].append("-")
                         toWrite = [row[0], temp[0], temp[1], temp[2][0], temp[2][1]]
+                        print(toWrite)
                         csv_writer.writerow(toWrite)
                     except Exception as e:
                         pass
             file.close()
         print(str(send) + " out of " + str(top) + ". Getting Data...\n")
         currentBatch = cg.addressbatch("tempSend.csv")
-        recieveData += currentBatch
+        receiveData += currentBatch
         sleep(1)
         os.remove("tempSend.csv")
         sleep(5)
@@ -104,15 +105,15 @@ if choice == "2" :
     inputFile = filedialog.askopenfilename(filetypes = (("Comma Seperated Values","*.csv"),("All files", "*.*")))
     
     with open(inputFile, newline = "") as file :
-        recieveData = [eval(row) for row in csv.reader(file)]
+        receiveData = [eval(row) for row in csv.reader(file)]
     
 totalDone = 0
-total = len(recieveData)
-print(recieveData)
+total = len(receiveData)
+print(receiveData)
 with open("OutputDistances.csv", "w", newline = "") as file :  
     csv_writer = csv.writer(file, dialect='excel')
     csv_writer.writerow(["School", "Address", "Lat/Lon", "Distance (Miles)"])
-    for index, school in enumerate(recieveData) :    
+    for index, school in enumerate(receiveData) :    
         
         collegeLocation = (school["lat"], school["lon"])
 
