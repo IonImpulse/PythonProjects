@@ -162,7 +162,7 @@ for i in filesList :
             tempInputString = inputDir + "\\" + i
             with open(tempInputString, newline = "", encoding="utf8") as file :
                 dataSet.append([])
-                dataSet[len(dataSet)-1] =  [row for row in csv.reader(file, delimiter = ';')]
+                dataSet[len(dataSet)-1] =  [row for row in csv.reader(file, delimiter = ',')]
                 dataSet[len(dataSet)-1] =  dataSet[len(dataSet)-1][1:]
         except Exception as e:
             print(str(e) + "\n=====================================\nThere was a problem opening \"" + str(i) + "\".")
@@ -176,6 +176,7 @@ userQuotes = {}
 wordList = []
 wordCount = {}
 
+print(dataSet)
 for index, i in enumerate(dataSet) :
     clear()
     progress(index, len(dataSet), status='Parsing text')
