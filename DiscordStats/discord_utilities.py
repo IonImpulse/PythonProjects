@@ -5,6 +5,53 @@ from tkinter import filedialog
 import os
 import sys
 import pickle
+import time
+import shutil
+
+def remove_punctuation(string) :
+    bad_chars = [".", ",", "?", "\"", "\'", "!", "*", "&", "@", "#", "$", "%", "^", "(", ")", ":", ";", "<", ">", "\\", "/", "-", "_", "`",]
+    
+    output = string.lower()
+
+    for bad_char in bad_chars :
+        output = output.replace(bad_char, "")
+    
+    return output
+
+class author :
+    def __init__(self, name) :
+        self.names = [name]
+        self.message_count = 0
+        self.word_count = 0
+        self.character_count = 0
+
+        self.time_ledger = []
+        self.vocab_dict = {}
+        self.attachments_ledger = []
+    
+    def process_message(self, name, time, message, attachments) :
+        self.message_count += 1
+        self.word_count += len(message.split(" "))
+        self.character_count += len(message)
+
+        for word in message.split(" ") :
+            clean_word = remove_punctuation(word)
+
+            if clean_word in self.vocab_dict :
+                self.vocab_dict[clean_word] += 1
+            else :
+                self.vocab_dict[clean_word] = 1
+        
+        if name not in self.names :
+            self.names.append(name)
+
+        self.time_ledger.append(time)
+
+        if attachments != "" :
+            self.attachments_ledger += attachments.split(',')
+
+    def sort_time(self, time_format) :
+        self.time_ledger = sorted((time.strptime(d, time_format) for d in self.time_ledger), reverse=True)
 
 class discord_utilities :
     def __init__(self, headless = True) :
@@ -14,13 +61,9 @@ class discord_utilities :
         self.user = os.environ.get('USERNAME')
         self.state = "initalized"
         self.schema = ["AuthorID", "Author", "Date", "Content", "Attachments", "Reactions"]
+        self.time_format = "%d-%b-%y %I:%M %p"
         
-        #Try to load author aliases from file, but creates a new one if it is not found
-        try:
-            with open(self.output_dir + "\\authors.aliases") as f :
-                self.author_aliases = pickle.load(f)
-        except Exception as e:
-            self.author_aliases = {}
+        self.SERVER_AUTHOR = author("SERVER_AUTHOR")
 
     def locate_data(self, input_path = "", output_path = "") :
         if self.headless == False :
@@ -28,13 +71,24 @@ class discord_utilities :
             root.withdraw()
             
             self.input_dir = filedialog.askdirectory().replace("/", "\\")
-            self.output_dir = self.input_dir + "\\discord_output"
+            self.output_dir = self.input_dir + "\\DU Output"
             
             #Create output dirs
             if os.path.exists(self.output_dir) == False :
                 os.makedirs(self.output_dir)
-            if os.path.exists(self.output_dir + '\\files\\') == False :
-                os.makedirs(self.output_dir + '\\files\\')
+            if os.path.exists(self.output_dir + '\\Attachments\\') == False :
+                os.makedirs(self.output_dir + '\\Attachments\\')
+
+        #Try to load author aliases from file, but creates a new one if it is not found
+        try:
+            with open(self.output_dir + "\\authors.list", 'rb') as f :
+                self.author_list = pickle.load(f)
+
+            shutil.copyfile(self.output_dir + "\\authors.list", self.output_dir + "\\authors.list.bak")
+
+        except Exception as e:
+            print(e)
+            self.author_list = {}
 
         #Create list of all files, full name
         self.file_list = [name for name in os.listdir(self.input_dir) if name[-3:] == "csv"]
@@ -64,19 +118,46 @@ class discord_utilities :
         self.state = "located"
 
     def scrape_stats(self, file_number) :
-        pass
-    def scrape_images(self, file_number) :
+        if self.state == "located" :
+
+            input_file = self.file_dict[file_number][1]
+
+            with open(self.input_dir + "\\" + input_file, newline = "", encoding="utf8") as f :
+                data_set = [row for row in csv.reader(f, delimiter = ',')]
+                #Delete header row
+                data_set = data_set[1:]
+            
+            for message in data_set :
+                #0 = Author ID
+                if message[0] not in self.author_list :
+                    #1 = Author Name
+                    self.author_list[message[0]] = author(message[1])
+                
+                #1 = Author Name
+                #2 = Date
+                #3 = Content
+                #4 = Attachments
+                self.author_list[message[0]].process_message(message[1], message[2], message[3], message[4])
+                self.SERVER_AUTHOR.process_message(message[1], message[2], message[3], message[4])
         
+        self.save_aliases()
+
+    def scrape_images_from_file(self, file_number) :
         if self.state == "located" :
 
             input_file = self.file_dict[file_number][1]
             
             image_prefix = self.file_dict[file_number][0] + "_"
 
+            output_path = self.output_dir + '\\Attachments\\' + image_prefix + "\\"
+
+            if os.path.exists(output_path) == False :
+                os.makedirs(output_path)
+
             start = 0
 
-            with open(self.input_dir + "\\" + input_file, newline = "", encoding="utf8") as file :
-                raw_data = [row for row in csv.reader(file, delimiter = ',')]
+            with open(self.input_dir + "\\" + input_file, newline = "", encoding="utf8") as f :
+                raw_data = [row for row in csv.reader(f, delimiter = ',')]
 
             raw_data = raw_data[1:]
 
@@ -101,7 +182,7 @@ class discord_utilities :
                     try:
                         if index >= int(start) :
                             temp_img = requests.get(i)
-                            output_path = self.output_dir + '\\files\\' + image_prefix + str(counter) + '.' + temp_img.url.split('.')[-1]
+                            output_path = output_path + image_prefix + str(counter) + '.' + temp_img.url.split('.')[-1]
                             open(output_path, 'wb').write(temp_img.content)
                         counter += 1
                     except Exception as e:
@@ -116,10 +197,15 @@ class discord_utilities :
         pass
     
     def save_aliases(self) :
-        with open(self.output_dir + "\\authors.aliases", 'w') as f :
-            pickle.dump(self.author_aliases, f)
+        with open(self.output_dir + "\\authors.list", 'wb') as f :
+            pickle.dump(self.author_list, f)
+    
+    def bulk_scrape_stats(self, exclude=[]) :
+        
+    def export_stats(self) :
+        pass
 
 if __name__ == "__main__":
     scraper = discord_utilities(headless=False)
     scraper.locate_data()
-    scraper.scrape_images("607850285938901013")
+    scraper.scrape_stats("607850285938901013")
