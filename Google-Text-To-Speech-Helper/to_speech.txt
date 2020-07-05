@@ -1,0 +1,3 @@
+<speak>
+     Pay no attention to the world splintering. <break time="400ms"> It pays no attention to you.
+</speak>
