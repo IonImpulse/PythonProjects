@@ -9,7 +9,7 @@ import time
 import shutil
 
 def remove_punctuation(string) :
-    bad_chars = [".", ",", "?", "\"", "\'", "!", "*", "&", "@", "#", "$", "%", "^", "(", ")", ":", ";", "<", ">", "\\", "/", "-", "_", "`"]
+    bad_chars = [".", ",", "?", "\"", "\'", "!", "*", "&", "@", "#", "$", "%", "^", "(", ")", ";", "<", ">", "\\", "/", "-", "_", "`"]
     
     output = string.lower()
 
@@ -199,9 +199,8 @@ class discord_utilities :
                 for i in temp_URLS :
                     try:
                         if index >= int(start) :
-                            temp_img = requests.get(i)
-                            temp_img_suffix = temp_img.url.split('.')[-1]
-                            temp_img_name = temp_img.url.split('.')[-2].split('/')[-1]                           
+                            temp_img_suffix = url.split('.')[-1]
+                            temp_img_name = url.split('.')[-2].split('/')[-1]                           
                             
                             print(temp_img_name)
                             temp_output_path = output_path + image_prefix + str(counter) + "_" + temp_img_name + '.' + temp_img_suffix
@@ -209,6 +208,7 @@ class discord_utilities :
 
                             if os.path.isfile(temp_output_path) == False :
                                 with open(temp_output_path, 'wb') as f :
+                                    temp_img = requests.get(i)
                                     f.write(temp_img.content)
                             else :
                                 print("Skipping!")
@@ -310,7 +310,7 @@ class discord_utilities :
             csv_writer.writerow(["Top 50 Words:"])
             csv_writer.writerow(["-----------------------------"])
             top_words = sorted(self.SERVER_AUTHOR.vocab_dict.items(), key=lambda word: word[1], reverse=True)
-            for index, word in enumerate(top_words[:50]) :
+            for index, word in enumerate(top_words[:1000]) :
                 csv_writer.writerow([str(index + 1) + ":", word[0], word[1]])
 
         for author_id in self.author_list :
@@ -366,8 +366,8 @@ class discord_utilities :
 if __name__ == "__main__":
     scraper = discord_utilities(headless=False)
     scraper.locate_data(input_path="V:\\Programming\\Discord Images")
-    scraper.bulk_scrape_stats()
-    scraper.load_data()
-    scraper.export_stats()
-    scraper.create_text_file()
-    #scraper.bulk_scrape_images()
+    #scraper.bulk_scrape_stats()
+    #scraper.load_data()
+    #scraper.export_stats()
+    #scraper.create_text_file()
+    scraper.bulk_scrape_images()

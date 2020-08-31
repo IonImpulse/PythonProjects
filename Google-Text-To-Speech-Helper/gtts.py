@@ -18,13 +18,13 @@ def synthesize_ssml(ssml):
     voice = texttospeech.VoiceSelectionParams(
         language_code="en-US",
         name="en-US-Standard-C",
-        ssml_gender=texttospeech.SsmlVoiceGender.MALE,
+        ssml_gender=texttospeech.SsmlVoiceGender.FEMALE,
     )
 
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.LINEAR16,
-        speaking_rate=.8,
-        pitch=-8,
+        speaking_rate=1,
+        pitch=0,
     )
 
     response = client.synthesize_speech(

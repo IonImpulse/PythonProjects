@@ -1,3 +1,6 @@
 <speak>
-     Pay no attention to the world splintering. <break time="400ms"> It pays no attention to you.
+     Starting Monday @DTS SchoolSeattle
+ has a new virtual school schedule. We’re #nimble and responsive to the needs of our students. Check out the priorities behind the changes in this video. @GOAlearning
+, @ejhudson
+, @belathram
 </speak>
