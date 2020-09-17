@@ -365,9 +365,9 @@ class discord_utilities :
 
 if __name__ == "__main__":
     scraper = discord_utilities(headless=False)
-    scraper.locate_data(input_path="V:\\Programming\\Discord Images")
-    #scraper.bulk_scrape_stats()
-    #scraper.load_data()
-    #scraper.export_stats()
-    #scraper.create_text_file()
+    scraper.locate_data(input_path="V:\\Programming\\Temp CSVs")
+    scraper.bulk_scrape_stats()
+    scraper.load_data()
+    scraper.export_stats()
+    scraper.create_text_file()
     scraper.bulk_scrape_images()
