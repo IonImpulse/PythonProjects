@@ -24,10 +24,15 @@ class author :
         self.message_count = 0
         self.word_count = 0
         self.character_count = 0
+        self.question_count = 0
 
         self.time_ledger = []
         self.vocab_dict = {}
         self.attachments_ledger = []
+        self.agreement_dict = {}
+        
+        self.times_majority = 0
+        self.times_minority = 0
     
     def process_message(self, name, time, message, attachments) :
         self.message_count += 1
@@ -62,6 +67,10 @@ class author :
         if attachments != "" :
             self.attachments_ledger += attachments.split(',')
 
+        if len(message) > 0 :
+            if message[-1] == "?" :
+                self.question_count += 1
+
     def sort_time(self, time_format) :
         
         #Sort the time ledger by formating each time value as a strptime value
@@ -77,7 +86,9 @@ class discord_utilities :
         self.schema = ["AuthorID", "Author", "Date", "Content", "Attachments", "Reactions"]
         self.author_list = {}
         self.time_format = "%d-%b-%y %I:%M %p"
-        
+        self.music_list = {}
+        self.largest_poll = []
+
         self.SERVER_AUTHOR = author("SERVER_AUTHOR")
 
     def locate_data(self, input_path = "") :
@@ -155,6 +166,19 @@ class discord_utilities :
                     self.author_list[message[0]].process_message(message[1], message[2], message[3], message[4])
                     self.SERVER_AUTHOR.process_message(message[1], message[2], message[3], message[4])
 
+                    if message[3][1:5] == "play" :
+                        try :
+                            song_name = message[3][6:].lower()
+
+                            if song_name not in self.music_list :
+                                self.music_list[song_name] = 1
+                            else :
+                                self.music_list[song_name] += 1
+            
+                        except Exception as e :
+                            pass
+
+
             elif mode == "return" : 
                 return data_set
                 
@@ -223,10 +247,59 @@ class discord_utilities :
     
     def get_quotes(self, file_number) :
         pass
-    
+
+    def get_polls(self, poll_index) :
+        self.largest_poll = ["", "", 0]
+
+        with open(self.input_dir + "\\" + list(self.file_dict.values())[poll_index][1], newline = "", encoding="utf8") as f :
+            data_set = [row for row in csv.reader(f, delimiter = ',')]
+            #Delete header row
+            data_set = data_set[1:]
+        
+        polls_list = []
+
+        for row in data_set :
+            # Author ID, Content, Reactions
+            polls_list.append([str(row[0]),str(row[3]),eval(bytes(row[5], 'utf-8').decode('utf-8', 'ignore'))])
+
+        for row in polls_list :
+            highest_reaction = max([len(x) for x in row[2].values()])
+
+            if highest_reaction > self.largest_poll[2] :
+                self.largest_poll = [row[0], row[1], highest_reaction]
+
+            for key in row[2] :
+                for author_top_int in row[2][key] :
+                    author_top = str(author_top_int)
+
+                    print(f"Who agrees with {self.author_list[author_top].names[0]}?")
+                    if author_top in self.author_list.keys() :
+                        
+                        if author_top not in self.SERVER_AUTHOR.agreement_dict :
+                            self.SERVER_AUTHOR.agreement_dict[author_top] = 0
+                        
+                        self.SERVER_AUTHOR.agreement_dict[author_top] += (len(row[2][key]) - 1)
+
+                        if len(row[2][key]) == highest_reaction :
+                            self.author_list[author_top].times_majority += 1
+                        else :
+                            self.author_list[author_top].times_minority += 1
+
+                        for author_bottom_int in row[2][key] :
+                            
+                            author_bottom = str(author_bottom_int)
+                            
+                            if author_top != author_bottom :
+                                print(f"- {self.author_list[author_bottom].names[0]}")
+                                if author_bottom not in self.author_list[author_top].agreement_dict :
+                                    self.author_list[author_top].agreement_dict[author_bottom] = 0
+                                
+                                self.author_list[author_top].agreement_dict[author_bottom] += 1
+        self.save_aliases()
+
     def save_aliases(self) :
         with open(self.output_dir + "\\authors.list", 'wb') as f :
-            pickle.dump([self.author_list, self.SERVER_AUTHOR], f)
+            pickle.dump([self.author_list, self.SERVER_AUTHOR, self.music_list, self.largest_poll], f)
     
     def bulk_scrape_stats(self, exclude=[]) :
         for channel in self.file_dict :
@@ -244,7 +317,7 @@ class discord_utilities :
             shutil.copyfile(self.output_dir + "\\authors.list", self.output_dir + "\\authors.list.bak")
 
             with open(self.output_dir + "\\authors.list", 'rb') as f :
-                self.author_list, self.SERVER_AUTHOR = pickle.load(f)
+                self.author_list, self.SERVER_AUTHOR, self.music_list, self.largest_poll = pickle.load(f)
                 
     def create_text_file(self, exclude=[]) :
         all_data = []
@@ -272,6 +345,45 @@ class discord_utilities :
             csv_writer.writerow([self.SERVER_AUTHOR.message_count, self.SERVER_AUTHOR.word_count, self.SERVER_AUTHOR.character_count, str(len(self.SERVER_AUTHOR.attachments_ledger))])            
             csv_writer.writerow(["-----------------------------"])     
             
+            if self.largest_poll != [] :
+                csv_writer.writerow(["-----------------------------"])
+                csv_writer.writerow(["Largest Poll:", ])
+                csv_writer.writerow(["-----------------------------"])
+                csv_writer.writerow([self.author_list[self.largest_poll[0]].names[0], self.largest_poll[1], self.largest_poll[2]])
+
+                print(self.SERVER_AUTHOR.agreement_dict)
+
+                csv_writer.writerow(["-----------------------------"])
+                csv_writer.writerow(["Voted the most amount of times:", ])
+                csv_writer.writerow(["-----------------------------"])
+                csv_writer.writerow([self.author_list[max(self.SERVER_AUTHOR.agreement_dict, key=self.SERVER_AUTHOR.agreement_dict.get)].names[0], max(self.SERVER_AUTHOR.agreement_dict.values())])
+
+                csv_writer.writerow(["-----------------------------"])
+                csv_writer.writerow(["Voted the least amount of times:", ])
+                csv_writer.writerow(["-----------------------------"])
+                csv_writer.writerow([self.author_list[min(self.SERVER_AUTHOR.agreement_dict, key=self.SERVER_AUTHOR.agreement_dict.get)].names[0], min(self.SERVER_AUTHOR.agreement_dict.values())])
+
+                csv_writer.writerow(["-----------------------------"])
+                csv_writer.writerow(["Most Agreeable:", ])
+                csv_writer.writerow(["-----------------------------"])
+
+                def get_second(a) :
+                    return a[1]
+
+                temp_list = [[key, self.SERVER_AUTHOR.agreement_dict[key] * (self.author_list[key].times_majority/self.author_list[key].times_minority)] for key in self.author_list if self.author_list[key].times_minority != 0]
+
+                agreeable = max(temp_list, key=get_second)
+
+                csv_writer.writerow([self.author_list[agreeable[0]].names[0], agreeable[1]])
+
+                csv_writer.writerow(["-----------------------------"])
+                csv_writer.writerow(["Least Agreeable:", ])
+                csv_writer.writerow(["-----------------------------"])
+                
+                agreeable = min(temp_list, key=get_second)
+
+                csv_writer.writerow([self.author_list[agreeable[0]].names[0], agreeable[1]])
+
             csv_writer.writerow(["-----------------------------"])
             csv_writer.writerow(["List of Users:", ])
             csv_writer.writerow(["-----------------------------"])           
@@ -305,24 +417,63 @@ class discord_utilities :
             temp_sorted = sorted(self.author_list.items(), key=lambda author_id: len(author_id[1].attachments_ledger), reverse=True)
             for author_id in temp_sorted :
                 csv_writer.writerow([author_id[1].names[-1] + ":", len(author_id[1].attachments_ledger)])
+            
+            csv_writer.writerow(["-----------------------------"])
+            csv_writer.writerow(["Vocab Count per User:"])
+            csv_writer.writerow(["-----------------------------"])
+            temp_sorted = sorted(self.author_list.items(), key=lambda author_id: len(author_id[1].vocab_dict), reverse=True)
+            for author_id in temp_sorted :
+                csv_writer.writerow([author_id[1].names[-1] + ":", len(author_id[1].vocab_dict)])
 
             csv_writer.writerow(["-----------------------------"])
-            csv_writer.writerow(["Top 50 Words:"])
+            csv_writer.writerow(["Vocab/Word Count per User:"])
+            csv_writer.writerow(["-----------------------------"])
+            temp_sorted = sorted(self.author_list.items(), key=lambda author_id: len(author_id[1].vocab_dict), reverse=True)
+            for author_id in temp_sorted :
+                csv_writer.writerow([author_id[1].names[-1] + ":", len(author_id[1].vocab_dict)/author_id[1].word_count])
+
+            csv_writer.writerow(["-----------------------------"])
+            csv_writer.writerow(["Top 50 Songs:"])
+            csv_writer.writerow(["-----------------------------"])
+            top_songs = sorted(self.music_list.keys(), key=lambda song: self.music_list[song], reverse=True)
+            for index, song in enumerate(top_songs[:50]) :
+                csv_writer.writerow([str(index + 1) + ":", song, self.music_list[song]])
+
+            csv_writer.writerow(["-----------------------------"])
+            csv_writer.writerow(["Top 1000 Words:"])
             csv_writer.writerow(["-----------------------------"])
             top_words = sorted(self.SERVER_AUTHOR.vocab_dict.items(), key=lambda word: word[1], reverse=True)
             for index, word in enumerate(top_words[:1000]) :
                 csv_writer.writerow([str(index + 1) + ":", word[0], word[1]])
+            
+            
 
         for author_id in self.author_list :
-            output_name = "".join(x for x in self.author_list[author_id].names[-1] if x.isalnum())
+            output_name = "".join(x for x in self.author_list[author_id].names[0] if x.isalnum())
             with open(self.output_dir + "\\Users\\" + output_name + ".csv", "w", newline='', encoding="utf8") as target :
                 csv_writer = csv.writer(target, dialect="excel")
-                csv_writer.writerow(["Statistics for:", str(self.server_name)])
+                csv_writer.writerow(["Statistics for:", str(self.author_list[author_id].names[0])])
                 
                 csv_writer.writerow(["-----------------------------"])
-                csv_writer.writerow(["Total Messages:", "Total Words:", "Total Characters:", "Total Attachments:"])
+                csv_writer.writerow(["Total Messages:", "Total Words:", "Total Characters:", "Total Attachments:", "Total Questions:"])
                 csv_writer.writerow(["-----------------------------"])
-                csv_writer.writerow([self.author_list[author_id].message_count, self.author_list[author_id].word_count, self.author_list[author_id].character_count, str(len(self.author_list[author_id].attachments_ledger))])
+                csv_writer.writerow([self.author_list[author_id].message_count, self.author_list[author_id].word_count, self.author_list[author_id].character_count, str(len(self.author_list[author_id].attachments_ledger)), self.author_list[author_id].question_count])
+
+                if len(self.author_list[author_id].agreement_dict) > 0 :
+                    csv_writer.writerow(["-----------------------------"])
+                    csv_writer.writerow(["Times in the majority","Times in the minority"])
+                    csv_writer.writerow(["-----------------------------"])
+                    
+                    csv_writer.writerow([self.author_list[author_id].times_majority, self.author_list[author_id].times_minority])
+                    
+                    csv_writer.writerow(["-----------------------------"])
+                    csv_writer.writerow(["Agreed with ____ # of times", "Times Agreed"])
+                    csv_writer.writerow(["-----------------------------"])
+
+                    temp_dict = {key: value for key, value in sorted(self.author_list[author_id].agreement_dict.items(), key=lambda item: item[1], reverse=True)}
+                    for key in temp_dict :
+                        csv_writer.writerow([self.author_list[key].names[0], temp_dict[key]])
+
 
                 csv_writer.writerow(["-----------------------------"])
                 csv_writer.writerow(["Top 50 Words not in Server 50:"])
@@ -339,7 +490,7 @@ class discord_utilities :
 
                 for index, word in enumerate(output_list) :  
                     csv_writer.writerow([str(index + 1) + ":", word[0], word[1]])   
-
+        
         with open(self.output_dir + "\\" + self.server_name + "_Timemap.csv", "w", newline='', encoding="utf8") as target :
             time_list = []
             for ampm in range(2) :
@@ -360,14 +511,79 @@ class discord_utilities :
             csv_writer.writerow(["Timemap for:", str(self.server_name)])
             csv_writer.writerows(time_list)
 
+        if self.largest_poll != [] :
+            with open(self.output_dir + "\\" + self.server_name + "_Poll_Agreements.csv", "w", newline='', encoding="utf8") as target :
+                csv_writer = csv.writer(target, dialect="excel")
+
+                list_of_pollers = [key for key in self.SERVER_AUTHOR.agreement_dict.keys()]
+
+                csv_writer.writerow([""] + [self.author_list[key].names[0] for key in list_of_pollers])
+
+                for poller in list_of_pollers :
+                    temp_list = [self.author_list[poller].names[0]]
+                    
+                    for poller_bottom in list_of_pollers :
+                        if poller_bottom in self.author_list[poller].agreement_dict :
+                            temp_list.append(self.author_list[poller].agreement_dict[poller_bottom])
+                        else :
+                            temp_list.append(0)
+
+                    csv_writer.writerow(temp_list)
+            
+            with open(self.output_dir + "\\" + self.server_name + "_Poll_Agreements_R.csv", "w", newline='', encoding="utf8") as target :
+                csv_writer = csv.writer(target, dialect="excel")
+
+                list_of_pollers = [key for key in self.SERVER_AUTHOR.agreement_dict.keys()]
+
+                csv_writer.writerow(["From","To","Value"])
+                list_done = []
+                for poller in list_of_pollers :                
+                        for poller_bottom in list_of_pollers :
+                            if poller_bottom not in list_done and poller_bottom != poller:
+                                if poller_bottom in self.author_list[poller].agreement_dict :
+                                    csv_writer.writerow([self.author_list[poller].names[0], self.author_list[poller_bottom].names[0],self.author_list[poller].agreement_dict[poller_bottom]])
+                                else :
+                                    csv_writer.writerow([self.author_list[poller].names[0], self.author_list[poller_bottom].names[0],0])
+                        list_done.append(poller)
+
+                    
+
+
+
 #C:\\Users\\ionim\\Documents\\Ethan\\Programs\\Discord\\Logs\\Pullcord\\ALWEG\\Temp
 #V:\\Programming\\Neural Networks\\lstm_lyrics_discord_server\\corpora\\Raw Data
 
 if __name__ == "__main__":
     scraper = discord_utilities(headless=False)
     scraper.locate_data(input_path="V:\\Programming\\Temp CSVs")
+
+    last = time.perf_counter()
+    print("Scraping stats...")
     scraper.bulk_scrape_stats()
+    print(f"DONE! in {time.perf_counter() - last}")
+
+    last = time.perf_counter()
+    print("Getting polls...")
+    #scraper.get_polls(21)
+    print(f"DONE! in {time.perf_counter() - last}")
+
+    last = time.perf_counter()
+    print("Loading data...")
     scraper.load_data()
+    print(f"DONE! in {time.perf_counter() - last}")
+
+    last = time.perf_counter()
+    print("Loading data...")
+    #scraper.get_popularity("based")
+    print(f"DONE! in {time.perf_counter() - last}")
+
+    last = time.perf_counter()
+    print("Exporting data...")
     scraper.export_stats()
+    print(f"DONE! in {time.perf_counter() - last}")
+
+    last = time.perf_counter()
+    print("Creating text file...")
     scraper.create_text_file()
-    scraper.bulk_scrape_images()
+    print(f"DONE! in {time.perf_counter() - last}")
+    #scraper.bulk_scrape_images()

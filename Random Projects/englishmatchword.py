@@ -101,37 +101,45 @@ for i in range(total) :
 choice = ""
 
 words_to_change = []
+words_to_skip = []
 
 for l_pos, line in enumerate(changeData) :
     for w_pos, word in enumerate(line.split(" ")) :
         print(clean_word(word))
-        possible_changes = getChanges(clean_word(word))
+        if word not in words_to_skip :
+            possible_changes = getChanges(clean_word(word))
+            words_to_skip.append(word)
+
+            if len(possible_changes) > 0 :
+                print("\n")
+                print(line)
+                print("Word on line " + str(l_pos) + ", word " + str(w_pos) + "")
+                print("Change [" + str(word) + "] to:")
+                print("Enter: No Change")
+
+                for index, i in enumerate(possible_changes) :
+                    print(str(index + 1) + ": " + str(i))
+
+                selection = -1
+                
+                while selection == -1 :
+                    choice = input(":")
+
+                    if choice == "" :
+                        selection = 0
+                    else :
+                        try : 
+                            selection = int(choice)
+                            if selection > len(possible_changes) :
+                                print("Please input a valid number")
+                                selection = -1
+
+                        except Exception as e :
+                            print("Please input a valid number")
+
+                if selection != 0 :
+                    words_to_change.append([word, possible_changes[selection-1], l_pos, w_pos])
         
-        if len(possible_changes) > 0 :
-            print("\n")
-            print(line)
-            print("Word on line " + str(l_pos) + ", word " + str(w_pos) + "")
-            print("Change [" + str(word) + "] to:")
-            print("0: No Change")
-
-            for index, i in enumerate(possible_changes) :
-                print(str(index + 1) + ": " + str(i))
-
-            selection = -1
-
-            while selection == -1 :
-                choice = input(":")
-                try : 
-                    selection = int(choice)
-                    if selection > len(possible_changes) :
-                        print("Please input a valid number")
-                        selection = -1
-
-                except Exception as e :
-                    print("Please input a valid number")
-
-            if selection != 0 :
-                words_to_change.append([word, possible_changes[selection-1], l_pos, w_pos])
 
 for i in words_to_change :
     print(i)

@@ -54,6 +54,35 @@ locations = [
 
 ]
 
+locations2 = [
+    "[21:24:17] [Async Chat Thread - #8/INFO]: <arimeffie> 1424 73 -406",
+    "[21:24:34] [Async Chat Thread - #8/INFO]: <DMR_Rocks> 1373 73 -412",
+    "[21:24:40] [Async Chat Thread - #8/INFO]: <ehawk08> 1412 80 -411",
+    "[21:24:41] [Async Chat Thread - #8/INFO]: <IonImpulse> 1351 83 -402",
+    "[21:24:43] [Async Chat Thread - #8/INFO]: <DodgerThePuppis> 1400 73 -435",
+    "[21:24:51] [Async Chat Thread - #8/INFO]: <DMR_Rocks> 1385 73 -435",
+    "[21:24:56] [Async Chat Thread - #8/INFO]: <IonImpulse> 1366 83 -395",
+    "[21:25:04] [Async Chat Thread - #8/INFO]: <DMR_Rocks> 1393 73 -436",
+    "[21:25:07] [Async Chat Thread - #8/INFO]: <IonImpulse> 1366 82 -394",
+    "[21:25:07] [Async Chat Thread - #8/INFO]: <arimeffie> 1424 73 -406",
+    "[21:25:24] [Async Chat Thread - #8/INFO]: <DMR_Rocks> 1336 84 -442",
+    "[21:25:28] [Async Chat Thread - #8/INFO]: <ColonelJJHawkins> 1437 73 -418",
+    "[21:25:30] [Async Chat Thread - #8/INFO]: <Ch1cChak> 1418 73 -419",
+    "[21:25:31] [Async Chat Thread - #8/INFO]: <IonImpulse> 1385 73 -381",
+    "[21:25:40] [Async Chat Thread - #8/INFO]: <arimeffie> 1410 73 -389",
+    "[21:25:46] [Async Chat Thread - #8/INFO]: <Fozzy623> 1351,",
+    "[21:25:53] [Async Chat Thread - #8/INFO]: <ehawk08> 1412 79 -418",
+    "[21:25:54] [Async Chat Thread - #8/INFO]: <IonImpulse> 1391 73 -385",
+    "[21:25:55] [Async Chat Thread - #8/INFO]: <Fozzy623> 1351,83, -401",
+    "[21:26:11] [Async Chat Thread - #8/INFO]: <DMR_Rocks> 1385 73 -365",
+    "[21:26:12] [Async Chat Thread - #8/INFO]: <arimeffie> 1399 73 -410",
+    "[21:26:12] [Async Chat Thread - #8/INFO]: <ColonelJJHawkins> 1420 72 -402",
+    "[21:26:36] [Async Chat Thread - #8/INFO]: <arimeffie> 1373 73 -411",
+    "[21:26:49] [Async Chat Thread - #8/INFO]: <ehawk08> 1423 78 -407",
+    "[21:27:02] [Async Chat Thread - #8/INFO]: <arimeffie> 1369 73 -419",
+    "[21:27:24] [Async Chat Thread - #8/INFO]: <arimeffie> 1374 77 -417",
+    "[21:27:34] [Async Chat Thread - #8/INFO]: <ehawk08> 1411 74 -390"
+]
 loot_table = [
     "end_city_treasure",
     "woodland_mansion",
